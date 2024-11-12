@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrador de tiendas</title>
+    <script src="https://unpkg.com/vue@3.5.11/dist/vue.runtime.global.js"></script>
+    <script src="https://unpkg.com/vue@3.5.11/dist/vue.global.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <div v-if="loader === true" class="d-flex loader">
+            <section>
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                Espere un poco...
+            </section>
+        </div>
+        <h4>Crear tienda</h4>
+        <hr>
+        <div v-if="mostrar" 
+        v-bind:class="'alert alert-' + (errorMensaje ? 'danger' : 'success')" 
+        role="alert">
+            {{mensaje}}
+        </div>
+        <form v-on:submit="crearTienda($event);">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre:</label>
+                <input v-model="nuevaTienda.nombre" type="text" class="form-control" id="nombre" placeholder="Mi tiendita :3">
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label">Descripción:</label>
+                <input v-model="nuevaTienda.descripcion" type="text" class="form-control" id="descripcion" placeholder="Tienda de abarrotes">
+            </div>
+            <div class="mb-3">
+                <label for="clave" class="form-label">Clave:</label>
+                <input v-model="nuevaTienda.clave" type="text" class="form-control" id="clave" placeholder="A123">
+            </div>
+            <div class="mb-3">
+                <label for="rfc" class="form-label">RFC:</label>
+                <input v-model="nuevaTienda.rfc" type="text" class="form-control" id="rfc" placeholder="TIEN123456X12">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary mb-3">Crear Tienda</button>
+            </div>
+        </form>
+
+        <hr>
+        <ul class="list-group">
+            <li v-for="tienda in tiendas" 
+                class="d-flex list-group-item">
+                <span v-on:click="borrarTienda(tienda.clave)" class="material-symbols-outlined delete-button">
+                    delete
+                </span>
+                {{tienda.nombre}} ({{tienda.rfc}} - {{tienda.clave}})
+            </li>
+        </ul>
+    </div>
+
+    <script src="./js/controller.js"></script>
+</body>
+</html>

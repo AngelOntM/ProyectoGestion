@@ -1,0 +1,30 @@
+{
+    "missingName": {
+        "descripcion": "Tienda ABC",
+        "rfc": "TIEN123456X12",
+        "clave": "A123"
+    },
+    "optionalDescription": {
+        "nombre": "Mi Tienda :3",
+        "rfc": "TIEN123456X12",
+        "clave": "A123"
+    },
+    "longName": {
+        "nombre": "Mi Tienda :3 ABC1234 ABC1234 ABC1234",
+        "descripcion": "Tienda ABC",
+        "rfc": "TIEN123456X12",
+        "clave": "A123"
+    },
+    "invalidRFC": {
+        "nombre": "Mi Tienda :3",
+        "descripcion": "Tienda ABC",
+        "rfc": "TIEN123456XYZ",
+        "clave": "A123"
+    },
+    "invalidClave": {
+        "nombre": "Mi Tienda :3",
+        "descripcion": "Tienda ABC",
+        "rfc": "TIEN123456X12",
+        "clave": "AAAA12"
+    }
+}

@@ -1,0 +1,30 @@
+FROM alpine AS primerLinux
+#RUN mkdir 10A
+#RUN echo "Mi primer docker" > 10A/archivo.txt
+#RUN echo "console.log('Hola NodeJS de Docker')" > ejemplo.js
+RUN apk update && apk add --no-cache git
+RUN git clone -b main https://github.com/Zoditu/10A-UTT.git
+
+FROM ubuntu:latest as base
+RUN apt-get -y update; apt-get -y install curl
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash && \
+    apt-get -qqy install nodejs
+#COPY --from=primerLinux ejemplo.js .
+#RUN mkdir pruebas
+#COPY Mathematics.js /pruebas
+#COPY sumas.test.js /pruebas
+#RUN cd pruebas && npm init --yes
+#RUN cd pruebas && npm install jest@latest
+#RUN npx jest sumas
+RUN apt-get update && apt-get install -y gnupg2
+RUN apt-get install -y wget
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \ 
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+RUN apt-get update && apt-get -y install google-chrome-stable
+#RUN systemctl start mongod
+COPY --from=primerLinux /10A-UTT /10A-Repo
+RUN npm install mocha -g
+RUN npm install mochawesome -g
+RUN cd /10A-Repo && npm install
+RUN cd /10A-Repo && npm install chromedriver@latest
+CMD node /10A-Repo/server & mocha --timeout 30000 --reporter mochawesome /10A-Repo/tests/store/newStore.ui.test.js

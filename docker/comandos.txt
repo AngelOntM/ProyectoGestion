@@ -1,0 +1,2 @@
+docker build -t 10a
+docker run -it 10a
