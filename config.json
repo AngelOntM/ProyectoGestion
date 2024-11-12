@@ -1,15 +1,15 @@
-{ 
-    "mongo": {
-        "local": {
-            "host": "mongodb://localhost:27017",
-            "defaultDB": "Test",
-            "port": 2024
-        },
-        "production": {
-            "host": "mongodb+srv://10A:utt2024@cluster0.6i37a.mongodb.net",
-            "defaultDB": "10A",
-            "params": "?retryWrites=true&w=majority&appName=Cluster0--",
-            "port": 2024
-        }
+{
+  "mongo": {
+    "local": {
+      "host": "mongodb://localhost:27017",
+      "defaultDB": "Gestion",
+      "port": 2024
+    },
+    "production": {
+      "host": "mongodb+srv://user1:proyectogestion@gestion.a4xhh.mongodb.net",
+      "defaultDB": "Gestion",
+      "params": "?retryWrites=true&w=majority&appName=Gestion",
+      "port": 2024
     }
+  }
 }
