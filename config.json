@@ -3,13 +3,13 @@
     "local": {
       "host": "mongodb://localhost:27017",
       "defaultDB": "Gestion",
-      "port": 2024
+      "port": 8080
     },
     "production": {
       "host": "mongodb+srv://user1:proyectogestion@gestion.a4xhh.mongodb.net",
       "defaultDB": "Gestion",
       "params": "?retryWrites=true&w=majority&appName=Gestion",
-      "port": 2024
+      "port": 8080
     }
   }
 }

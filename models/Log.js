@@ -1,13 +1,44 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-module.exports = mongoose.model("Log", new mongoose.Schema({
-    date: Date,
-    action: String,
-    source: String,
-    params: {
-        query: Object,
-        path: Object
+const logSchema = new mongoose.Schema(
+  {
+    date: {
+      type: Date,
+      required: true,
+      default: Date.now,
     },
-    data: Object,
-    geoInfo: Object
-}), 'Logs');
+    action: {
+      type: String,
+      required: true,
+      enum: ["POST", "GET", "PUT", "DELETE", "PATCH"],
+      uppercase: true,
+      trim: true,
+    },
+    source: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    params: {
+      query: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed,
+      },
+      path: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed,
+      },
+    },
+    data: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    geoInfo: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model("Log", logSchema, "Logs");

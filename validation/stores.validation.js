@@ -1,18 +1,26 @@
-const Joi = require('joi');
+const Joi = require("joi");
+const { productSchema } = require("./products.validation");
 
 module.exports = {
-    /**
-     * Store data
-     * @param {{nombre, descripcion, rfc, clave}} data 
-     */
-    newStore: function(data) {
-        const schema = Joi.object({
-            nombre: Joi.string().max(30).required(),
-            descripcion: Joi.string().optional(),
-            rfc: Joi.string().regex(/^[A-ZÑ]{4}\d{6}[A-ZÑ]\d{2}$/).required(),
-            clave: Joi.string().regex(/^[A-ZÑ]\d{3}$/).required()
-        });
+  /**
+   * Validar datos de una tienda
+   * @param {{name: string, address: string, postal_number: string, email: string, phone: string, products: Array}} data
+   */
+  newStore: function (data) {
+    // Esquema de validación para una tienda
+    const storeSchema = Joi.object({
+      name: Joi.string().min(3).max(40).required(),
+      address: Joi.string().min(5).max(100).required(),
+      postal_number: Joi.string()
+        .pattern(/^[0-9]{5}$/)
+        .required(),
+      email: Joi.string().email().required(),
+      phone: Joi.string()
+        .pattern(/^[0-9]{10}$/)
+        .required(),
+      products: Joi.array().items(productSchema),
+    });
 
-        return schema.validate(data);
-    }
-}
+    return storeSchema.validate(data);
+  },
+};

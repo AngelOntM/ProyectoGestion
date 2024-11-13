@@ -22,6 +22,7 @@
     "mocha": "^10.7.3",
     "mochawesome": "^7.1.3",
     "mongoose": "^8.6.3",
-    "selenium-webdriver": "^4.25.0"
+    "selenium-webdriver": "^4.25.0",
+    "vue": "^3.5.12"
   }
 }
