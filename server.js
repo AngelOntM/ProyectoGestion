@@ -1,3 +1,5 @@
+require("dotenv").config(); // Carga las variables de entorno desde un archivo .env
+
 const helpers = require("./utils/helpers");
 const entorno = helpers.processArguments();
 
@@ -48,8 +50,11 @@ app.listen(PORT, (error) => {
 
   // Conectar a MongoDB
   const dbConfig = config.mongo[entorno];
-  const params = dbConfig.params || "";
-  const mongoURI = `${dbConfig.host}/${dbConfig.defaultDB}${params}`;
+  const mongoURI = `${dbConfig.host}/${dbConfig.defaultDB}${
+    dbConfig.params || ""
+  }`
+    .replace("${MONGO_USER}", process.env.MONGO_USER)
+    .replace("${MONGO_PASSWORD}", process.env.MONGO_PASSWORD);
 
   mongoose
     .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })

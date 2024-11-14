@@ -1,4 +1,4 @@
-//constants.js
+// constants.js
 const ENVIRONMENTS = {
   dev: "local",
   production: "production",

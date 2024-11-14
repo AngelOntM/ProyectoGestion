@@ -1,19 +1,16 @@
-//helpers.js
-const constants = require("./constants");
+// helpers.js
+const { ENVIRONMENTS } = require("./constants");
 
 module.exports = {
   processArguments: function () {
-    let arguments = process.argv;
-    let entorno = constants.ENVIRONMENTS.production;
-    arguments.forEach((arg) => {
-      let argumento = arg.toLowerCase();
-      if (argumento.startsWith("--entorno=")) {
-        let valor = argumento.replace("--entorno=", "");
-        entorno =
-          constants.ENVIRONMENTS[valor] || constants.ENVIRONMENTS.production;
-      }
-    });
+    const entornoArg = process.argv.find((arg) =>
+      arg.toLowerCase().startsWith("--entorno=")
+    );
 
-    return entorno;
+    const entorno = entornoArg
+      ? entornoArg.split("=")[1].toLowerCase()
+      : ENVIRONMENTS.production;
+
+    return ENVIRONMENTS[entorno] || ENVIRONMENTS.production;
   },
 };
