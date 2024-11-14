@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -11,7 +12,8 @@
   "description": "",
   "dependencies": {
     "chai": "^4.4.1",
-    "chromedriver": "^129.0.3",
+    "chromedriver": "^131.0.0",
+    "dotenv": "^16.4.5",
     "edgedriver": "^5.6.1",
     "express": "^4.21.0",
     "express-ip": "^1.0.4",

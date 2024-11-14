@@ -9,7 +9,7 @@
       "host": "mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@gestion.a4xhh.mongodb.net",
       "defaultDB": "Gestion",
       "params": "?retryWrites=true&w=majority&appName=Gestion",
-      "port": 8080
+      "port": 3000
     }
   }
 }

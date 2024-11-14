@@ -6,7 +6,7 @@ const ENVIRONMENTS = {
 
 const URLS = {
   dev: "http://localhost:8080",
-  production: "http://localhost:8080",
+  production: "http://localhost:3000",
 };
 
 module.exports = {
