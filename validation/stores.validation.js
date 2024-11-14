@@ -18,7 +18,6 @@ module.exports = {
       phone: Joi.string()
         .pattern(/^[0-9]{10}$/)
         .required(),
-      products: Joi.array().items(productSchema),
     });
 
     return storeSchema.validate(data);

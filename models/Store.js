@@ -7,22 +7,6 @@ const storeSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    description: {
-      type: String,
-      trim: true,
-    },
-    rfc: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-    clave: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
     address: {
       type: String,
       trim: true,
@@ -43,12 +27,6 @@ const storeSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    products: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-      },
-    ],
   },
   { timestamps: true }
 );

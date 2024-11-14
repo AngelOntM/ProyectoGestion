@@ -1,9 +1,6 @@
 FROM alpine AS primerLinux
-#RUN mkdir 10A
-#RUN echo "Mi primer docker" > 10A/archivo.txt
-#RUN echo "console.log('Hola NodeJS de Docker')" > ejemplo.js
 RUN apk update && apk add --no-cache git
-RUN git clone -b main https://github.com/Zoditu/10A-UTT.git
+RUN git clone -b main https://github.com/AngelOntM/ProyectoGestion
 
 FROM ubuntu:latest as base
 RUN apt-get -y update; apt-get -y install curl
@@ -22,7 +19,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
 RUN apt-get update && apt-get -y install google-chrome-stable
 #RUN systemctl start mongod
-COPY --from=primerLinux /10A-UTT /10A-Repo
+COPY --from=primerLinux /ProyectoGestion /10A-Repo
 RUN npm install mocha -g
 RUN npm install mochawesome -g
 RUN cd /10A-Repo && npm install

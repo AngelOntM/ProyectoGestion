@@ -18,8 +18,8 @@ const productsRouter = require("./routers/products.routes");
 const Log = require("./models/Log");
 
 // Rutas para gestionar las tiendas y productos
-app.use("/api/stores", storesRouter);
-app.use("/api/products", productsRouter);
+app.use("stores", storesRouter);
+app.use("products", productsRouter);
 // Ruta para obtener logs
 app.use("/logs", async (req, res) => {
   try {

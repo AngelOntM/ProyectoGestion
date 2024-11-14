@@ -17,7 +17,7 @@ router.get("/:storeId/products", async (req, res) => {
 });
 
 // Agregar un producto a una tienda----------------------------------------------
-router.post("/:storeId/products", async (req, res) => {
+router.post("/", async (req, res) => {
   const { storeId } = req.params;
   const store = await Store.findById(storeId);
 
@@ -38,7 +38,7 @@ router.post("/:storeId/products", async (req, res) => {
 });
 
 // Actualizar un producto en una tienda----------------------------------------------
-router.put("/:storeId/products/:sku", async (req, res) => {
+router.put(":sku", async (req, res) => {
   const { storeId, sku } = req.params;
   const store = await Store.findById(storeId);
 
@@ -65,7 +65,7 @@ router.put("/:storeId/products/:sku", async (req, res) => {
 });
 
 // Eliminar un producto de una tienda----------------------------------------------
-router.delete("/:storeId/products/:sku", async (req, res) => {
+router.delete("/:sku", async (req, res) => {
   const { storeId, sku } = req.params;
   const store = await Store.findById(storeId);
 

@@ -1,2 +1,2 @@
-docker build -t 10a
-docker run -it 10a
+docker build -t gestion
+docker run -it gestion

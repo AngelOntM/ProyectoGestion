@@ -8,7 +8,7 @@ const chrome = require("selenium-webdriver/chrome");
       new chrome.Options().addArguments("--headless=new", "--headless")
     )
     .build();
-  await driver.get("http://localhost:8080/adminTiendas");
+  await driver.get("http://localhost:8080/");
 
   await driver.quit();
 })();
