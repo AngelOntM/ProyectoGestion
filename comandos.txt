@@ -1,6 +1,10 @@
+docker system prune -a -f
+
 docker build -t proyectogestion .
-docker run -p 3000:3000 proyectogestion
+docker run -p 8080:8080 proyectogestion
 docker run -it proyectogestion npm test
 
+docker ps
+docker stop
 
-docker system prune -a -f
+start ./reports/test-report.html

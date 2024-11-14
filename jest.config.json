@@ -1,9 +1,14 @@
 {
-    "reporters": [
-	"default",
-	["./node_modules/jest-html-reporter", {
-		"pageTitle": "Reporte Pruebas Tienda"
-	}]],
-	"verbose": true,
-	"testTimeout": 30000
+  "reporters": [
+    "default",
+    [
+      "./node_modules/jest-html-reporter",
+      {
+        "pageTitle": "Reporte Pruebas Tienda",
+        "outputPath": "./reports/test-report.html"
+      }
+    ]
+  ],
+  "verbose": true,
+  "testTimeout": 30000
 }

@@ -9,5 +9,5 @@ RUN apt-get -y update && apt-get -y install curl git
 WORKDIR /app
 COPY --from=primerLinux /ProyectoGestion /app
 RUN npm install
-EXPOSE 3000
+EXPOSE 8080
 CMD ["npm", "start"]
