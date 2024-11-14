@@ -66,3 +66,10 @@ app.listen(PORT, (error) => {
       process.exit(1);
     });
 });
+
+module.exports = app; // Exporta app para usarlo en las pruebas
+if (require.main === module) {
+  app.listen(PORT, () =>
+    console.log(`Servidor corriendo en el puerto: ${PORT}`)
+  );
+}

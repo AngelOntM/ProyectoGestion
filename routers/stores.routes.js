@@ -85,7 +85,7 @@ router.delete("/:name_email", async (req, res) => {
     // Eliminar la tienda
     await Store.deleteOne({ _id: exists._id });
 
-    res.send({ deleted: true });
+    res.status(202).send({ deleted: true });
   } catch (error) {
     console.error("Error al eliminar la tienda:", error);
     res.status(500).send({ error: "Error interno del servidor" });

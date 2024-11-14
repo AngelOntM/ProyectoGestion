@@ -8,6 +8,7 @@ const storeSchema = new mongoose.Schema(
       trim: true,
       minlength: 3,
       maxlength: 50,
+      unique: true,
     },
     address: {
       type: String,
