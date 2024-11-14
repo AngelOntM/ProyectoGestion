@@ -1,10 +1,9 @@
 const Joi = require("joi");
-const { productSchema } = require("./products.validation");
 
 module.exports = {
   /**
    * Validar datos de una tienda
-   * @param {{name: string, address: string, postal_number: string, email: string, phone: string, products: Array}} data
+   * @param {{name: string, address: string, postal_number: string, email: string, phone: string}} data
    */
   newStore: function (data) {
     // Esquema de validación para una tienda
@@ -19,7 +18,6 @@ module.exports = {
         .pattern(/^[0-9]{10}$/)
         .required(),
     });
-
     return storeSchema.validate(data);
   },
 };

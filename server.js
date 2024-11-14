@@ -1,4 +1,3 @@
-const constants = require("./utils/constants");
 const helpers = require("./utils/helpers");
 const entorno = helpers.processArguments();
 
@@ -18,8 +17,9 @@ const productsRouter = require("./routers/products.routes");
 const Log = require("./models/Log");
 
 // Rutas para gestionar las tiendas y productos
-app.use("stores", storesRouter);
-app.use("products", productsRouter);
+app.use("/api/stores", storesRouter);
+app.use("/api/products", productsRouter);
+
 // Ruta para obtener logs
 app.use("/logs", async (req, res) => {
   try {
@@ -46,7 +46,7 @@ app.listen(PORT, (error) => {
 
   console.log(`Servidor corriendo en el puerto: ${PORT}`);
 
-  // Conectar a MongoDB-------------------------------------------------------------
+  // Conectar a MongoDB
   const dbConfig = config.mongo[entorno];
   const params = dbConfig.params || "";
   const mongoURI = `${dbConfig.host}/${dbConfig.defaultDB}${params}`;

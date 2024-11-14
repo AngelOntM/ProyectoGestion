@@ -7,7 +7,7 @@ const Backup = require("../models/Backup");
 const Log = require("../models/Log");
 
 // Crear una nueva tienda----------------------------------------------
-router.post("/new", async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     new Log({
       date: new Date(),
@@ -111,6 +111,57 @@ router.get("/", async (req, res) => {
     res.send(stores);
   } catch (error) {
     console.error("Error al obtener las tiendas:", error);
+    res.status(500).send({ error: "Error interno del servidor" });
+  }
+});
+
+// Modificar una tienda----------------------------------------------
+router.put("/:name_email", async (req, res) => {
+  try {
+    new Log({
+      date: new Date(),
+      action: "PUT",
+      source: "/stores/:name_email",
+      params: {
+        query: req.query || null,
+        path: req.params || null,
+      },
+      data: req.body || null,
+      geoInfo: req.ipInfo,
+    }).save();
+
+    const name_email = req.params.name_email;
+    const exists = await Store.findOne({
+      $or: [{ name: name_email }, { email: name_email }],
+    });
+
+    if (!exists) {
+      return res.status(404).send({
+        message: "El nombre o email de la tienda no existe",
+      });
+    }
+
+    const body = req.body;
+    const validate = storesValidation.newStore(body);
+
+    if (validate.error) {
+      return res.status(400).send({ error: validate.error.details });
+    }
+
+    // Respaldar la tienda antes de modificarla
+    const backup = new Backup({
+      registro: exists.toObject(),
+      sourceType: "Store",
+      sourceId: exists._id,
+    });
+    await backup.save();
+
+    // Modificar la tienda
+    await Store.updateOne({ _id: exists._id }, body);
+
+    res.send({ modified: true });
+  } catch (error) {
+    console.error("Error al modificar la tienda:", error);
     res.status(500).send({ error: "Error interno del servidor" });
   }
 });
