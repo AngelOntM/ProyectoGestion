@@ -1,8 +1,5 @@
 require("dotenv").config(); // Carga las variables de entorno desde un archivo .env
 
-const helpers = require("./utils/helpers");
-const entorno = helpers.processArguments();
-
 const express = require("express");
 const mongoose = require("mongoose");
 const expressip = require("express-ip");
@@ -12,17 +9,13 @@ app.use(expressip().getIpInfoMiddleware);
 app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 
-const config = require("./config.json");
-
 const storesRouter = require("./routers/stores.routes");
 const productsRouter = require("./routers/products.routes");
 const Log = require("./models/Log");
 
-// Rutas para gestionar las tiendas y productos
 app.use("/api/stores", storesRouter);
 app.use("/api/products", productsRouter);
 
-// Ruta para obtener logs
 app.use("/logs", async (req, res) => {
   try {
     const logs = await Log.find({});
@@ -33,13 +26,17 @@ app.use("/logs", async (req, res) => {
   }
 });
 
-// Middleware para manejar errores globalmente
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send({ message: "Algo salió mal." });
 });
 
-const PORT = config.mongo[entorno].port || 8080;
+// Usando variables de entorno para puerto y configuración de MongoDB
+const PORT = process.env.PORT || 8080;
+const MONGO_HOST = process.env.MONGO_HOST || "mongodb://localhost:27017";
+const MONGO_DB = process.env.MONGO_DB || "Gestion";
+const MONGO_PARAMS = process.env.MONGO_PARAMS || "";
+
 app.listen(PORT, (error) => {
   if (error) {
     console.error("Error starting server:", error);
@@ -48,13 +45,7 @@ app.listen(PORT, (error) => {
 
   console.log(`Servidor corriendo en el puerto: ${PORT}`);
 
-  // Conectar a MongoDB
-  const dbConfig = config.mongo[entorno];
-  const mongoURI = `${dbConfig.host}/${dbConfig.defaultDB}${
-    dbConfig.params || ""
-  }`
-    .replace("${MONGO_USER}", process.env.MONGO_USER)
-    .replace("${MONGO_PASSWORD}", process.env.MONGO_PASSWORD);
+  const mongoURI = `${MONGO_HOST}/${MONGO_DB}${MONGO_PARAMS}`;
 
   mongoose
     .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -67,9 +58,4 @@ app.listen(PORT, (error) => {
     });
 });
 
-module.exports = app; // Exporta app para usarlo en las pruebas
-if (require.main === module) {
-  app.listen(PORT, () =>
-    console.log(`Servidor corriendo en el puerto: ${PORT}`)
-  );
-}
+module.exports = app;

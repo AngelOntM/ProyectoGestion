@@ -1,3 +1,6 @@
 docker build -t proyectogestion .
 docker run -p 3000:3000 proyectogestion
 docker run -it proyectogestion npm test
+
+
+docker system prune -a -f
