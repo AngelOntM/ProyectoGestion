@@ -197,8 +197,8 @@
             <input type="text" class="form-control" id="phone" name="phone" />
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-primary">Crear</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-success">Crear</button>
           </div>
         </form>
       </div>
@@ -223,7 +223,11 @@
     <script src="../public/assets/plugins/datatables/datatables.js"></script>
     <script>
       $(document).ready(function() {
-          $('#datatable1').DataTable();
+        $('#datatable1').DataTable({
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" // Cambia la versión si es necesario
+            }
+        });
       });
   </script>
   
