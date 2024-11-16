@@ -1,0 +1,18 @@
+/* Your Custom CSS Goes here */
+
+.btn {
+    display: flex; /* Flexbox para centrar contenido */
+    justify-content: center; /* Centrar horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+}
+
+/* Cambiar el color del ícono al pasar el cursor */
+.btn-warning:hover i,
+.btn-danger:hover i {
+    color: black;
+}
+
+/* Opcional: Estilo de los íconos */
+.btn i {
+    font-size: 16px; /* Ajustar tamaño del ícono si es necesario */
+}

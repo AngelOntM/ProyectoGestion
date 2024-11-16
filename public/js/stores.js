@@ -1,3 +1,8 @@
+// Inicializar datatable
+document.addEventListener("DOMContentLoaded", function () {
+  $("#datatable1").DataTable();
+});
+
 document
   .getElementById("createStoreForm")
   .addEventListener("submit", async (e) => {
