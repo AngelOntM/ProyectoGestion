@@ -16,3 +16,36 @@
 .btn i {
     font-size: 16px; /* Ajustar tamaño del ícono si es necesario */
 }
+
+/* Fondo del cuadro SweetAlert */
+.custom-swal-popup {
+    background-color: #0c1427 !important; /* Fondo oscuro */
+    color: #ffffff !important; /* Texto blanco */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Sombra */
+  }
+  
+  /* Estilo del título */
+  .custom-swal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff !important; /* Texto blanco */
+  }
+  
+  /* Estilo del contenido del mensaje */
+  .custom-swal-content {
+    font-size: 1rem;
+    color: #d1d5db !important; /* Texto gris claro */
+  }
+  
+  /* Personaliza los botones utilizando clases de Bootstrap */
+  .swal2-confirm.btn-success {
+    background-color: #28a745 !important; /* Verde */
+    border: none;
+  }
+  
+  .swal2-cancel.btn-danger {
+    background-color: #dc3545 !important; /* Rojo */
+    border: none;
+  }
+  

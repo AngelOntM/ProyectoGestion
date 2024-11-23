@@ -1,149 +1,159 @@
-$(document).ready(async function () {
-  // Función para cargar las tiendas y renderizarlas en la tabla
-  async function loadStores() {
-    try {
-      const response = await fetch("/stores"); // Llama a tu endpoint de tiendas
-      const stores = await response.json();
-      const tableBody = $("#datatable1 tbody");
-      tableBody.empty(); // Limpia el contenido existente
+$(document).ready(function () {
+  let storesData = []; // Variable para almacenar los datos de las tiendas
 
-      // Rellenar la tabla con los datos de las tiendas
-      stores.forEach((store) => {
-        const row = `
-            <tr>
-              <td>${store.name}</td>
-              <td>${store.address}</td>
-              <td>${store.postalCode}</td>
-              <td>${store.email}</td>
-              <td>${store.phone}</td>
-              <td>
-                <button class="btn btn-warning btn-sm me-2" title="Editar">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button class="btn btn-danger btn-sm" title="Eliminar">
-                  <i class="material-icons">delete</i>
-                </button>
-              </td>
-            </tr>
+  // Configuración de DataTable
+  $("#datatable1").DataTable({
+    ajax: {
+      url: "api/stores",
+      type: "GET",
+      dataSrc: function (json) {
+        storesData = json; // Guardar todos los datos de la tienda en la variable storesData
+        return json;
+      },
+    },
+    columns: [
+      { data: "name", title: "Nombre" },
+      { data: "address", title: "Dirección" },
+      { data: "postal_number", title: "Código Postal" },
+      { data: "email", title: "Correo Electrónico" },
+      { data: "phone", title: "Teléfono" },
+      {
+        data: null,
+        title: "Acciones",
+        render: function (data, type, row) {
+          return `
+            <button class="btn btn-warning btn-sm edit-btn" data-email="${row.email}" title="Editar">
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn btn-danger btn-sm delete-btn" data-email="${row.email}" title="Eliminar">
+              <i class="material-icons">delete</i>
+            </button>
           `;
-        tableBody.append(row);
+        },
+      },
+    ],
+    language: {
+      url: "//cdn.datatables.net/plug-ins/2.1.8/i18n/es-ES.json",
+    },
+  });
+
+  // Manejo del botón de editar
+  $("#datatable1").on("click", ".edit-btn", function () {
+    const email = $(this).data("email");
+
+    // Buscar los datos de la tienda usando el email
+    const store = storesData.find((store) => store.email === email);
+
+    if (store) {
+      // Rellenar los campos del formulario en el modal con los datos obtenidos
+      $("#editStoreId").val(store.email); // Usamos el email como ID
+      $("#editName").val(store.name);
+      $("#editAddress").val(store.address);
+      $("#editPostalNumber").val(store.postal_number);
+      $("#editEmail").val(store.email);
+      $("#editPhone").val(store.phone);
+
+      // Abrir el modal
+      $("#editStoreModal").modal("show");
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "No se encontró la tienda con ese correo electrónico.",
       });
-    } catch (error) {
-      console.error("Error al cargar las tiendas:", error);
     }
-  }
+  });
 
-  // Llama a la función para cargar datos
-  await loadStores();
+  // Manejo del formulario para editar la tienda
+  $("#editStoreForm").on("submit", function (e) {
+    e.preventDefault(); // Evitar el comportamiento por defecto
 
-  $(document).ready(async function () {
-    // Función para cargar las tiendas y renderizarlas en la tabla
-    async function loadStores() {
-      try {
-        const response = await fetch("/stores"); // Llama a tu endpoint de tiendas
-        const stores = await response.json();
-        const tableBody = $("#datatable1 tbody");
-        tableBody.empty(); // Limpia el contenido existente
+    const formData = {
+      name: $("#editName").val().trim(),
+      address: $("#editAddress").val().trim(),
+      postal_number: $("#editPostalNumber").val().trim(),
+      email: $("#editEmail").val().trim(),
+      phone: $("#editPhone").val().trim(),
+    };
 
-        // Rellenar la tabla con los datos de las tiendas
-        stores.forEach((store) => {
-          const row = `
-            <tr>
-              <td>${store.name}</td>
-              <td>${store.address}</td>
-              <td>${store.postalCode}</td>
-              <td>${store.email}</td>
-              <td>${store.phone}</td>
-              <td>
-                <button class="btn btn-warning btn-sm me-2" title="Editar">
-                  <i class="material-icons">edit</i>
-                </button>
-                <button class="btn btn-danger btn-sm" title="Eliminar">
-                  <i class="material-icons">delete</i>
-                </button>
-              </td>
-            </tr>
-          `;
-          tableBody.append(row);
+    // Hacer una solicitud para actualizar la tienda
+    $.ajax({
+      url: `api/stores/${encodeURIComponent(formData.email)}`,
+      type: "PUT",
+      contentType: "application/json",
+      data: JSON.stringify(formData),
+      success: function () {
+        Swal.fire({
+          icon: "success",
+          title: "Tienda actualizada",
+          text: "Los datos de la tienda se han actualizado correctamente.",
+          timer: 2000,
+          showConfirmButton: false,
         });
-      } catch (error) {
-        console.error("Error al cargar las tiendas:", error);
-      }
-    }
 
-    // Llama a la función para cargar datos
-    await loadStores();
-
-    // Inicializar DataTable después de cargar los datos
-    $("#datatable1").DataTable({
-      language: {
-        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json", // Cambia la versión si es necesario
+        // Cerrar el modal y recargar la tabla
+        $("#editStoreModal").modal("hide");
+        $("#datatable1").DataTable().ajax.reload();
+      },
+      error: function (xhr) {
+        const errorText =
+          xhr.status === 409
+            ? "El nombre o email ya existen. Intenta con otros valores."
+            : "Ocurrió un error al actualizar la tienda.";
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorText,
+        });
       },
     });
   });
-});
 
-document
-  .getElementById("createStoreForm")
-  .addEventListener("submit", async (e) => {
-    e.preventDefault();
+  // Manejo del botón eliminar
+  $("#datatable1").on("click", ".delete-btn", function () {
+    const email = $(this).data("email");
 
-    // Obtener los valores del formulario
-    const name = document.getElementById("name").value;
-    const address = document.getElementById("address").value;
-    const postal_number = document.getElementById("postal_number").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
-
-    const storeData = {
-      name,
-      address,
-      postal_number,
-      email,
-      phone,
-    };
-
-    try {
-      // Realizar la petición POST
-      const response = await fetch("/stores", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(storeData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Tienda creada exitosamente");
-
-        // Limpiar el formulario
-        document.getElementById("createStoreForm").reset();
-
-        // Cerrar el modal
-        const modal = bootstrap.Modal.getInstance(
-          document.getElementById("createStoreModal")
-        );
-        modal.hide();
-
-        // Recargar la tabla
-        await loadStores();
-      } else if (response.status === 400) {
-        // Error de validación
-        alert(
-          "Error de validación: " +
-            data.error.map((err) => err.message).join(", ")
-        );
-      } else if (response.status === 409) {
-        // Error de duplicados
-        alert("Error: " + data.message);
-      } else {
-        // Otro error
-        alert("Error al crear la tienda: " + JSON.stringify(data));
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará la tienda de forma permanente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#dc3545",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteStore(email);
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Hubo un error al intentar crear la tienda.");
-    }
+    });
   });
+
+  // Función para eliminar una tienda
+  function deleteStore(email) {
+    $.ajax({
+      url: `api/stores/${encodeURIComponent(email)}`,
+      type: "DELETE",
+      success: function () {
+        Swal.fire({
+          icon: "success",
+          title: "Tienda eliminada",
+          text: "La tienda ha sido eliminada con éxito.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        $("#datatable1").DataTable().ajax.reload();
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text:
+            xhr.status === 404
+              ? "No se encontró ninguna tienda con ese correo electrónico."
+              : "Ocurrió un error al eliminar la tienda.",
+        });
+      },
+    });
+  }
+});
