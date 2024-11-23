@@ -1,6 +1,0 @@
-[?2004h]0;root@6d7ebaaa9018: /root@6d7ebaaa9018:/# ^C[?2004l[?2004h[?2004l
-[?2004h]0;root@6d7ebaaa9018: /root@6d7ebaaa9018:/# ^C[?2004l[?2004h[?2004l
-[?2004h]0;root@6d7ebaaa9018: /root@6d7ebaaa9018:/# ^C[?2004l[?2004h[?2004l
-[?2004h]0;root@6d7ebaaa9018: /root@6d7ebaaa9018:/# ^C[?2004l[?2004h[?2004l
-[?2004h]0;root@6d7ebaaa9018: /root@6d7ebaaa9018:/# 
-[?2004l[?2004h]0;root@6d7ebaaa9018: /root@6d7ebaaa9018:/# 

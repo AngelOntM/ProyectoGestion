@@ -10,4 +10,6 @@ WORKDIR /app
 COPY --from=primerLinux /ProyectoGestion /app
 RUN npm install
 EXPOSE 8080
-CMD ["npm", "start"]
+#Correr el comando chmod +x node_modules/.bin/jest
+RUN chmod +x node_modules/.bin/jest
+#CMD ["npm", "start"]

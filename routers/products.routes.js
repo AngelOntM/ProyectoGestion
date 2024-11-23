@@ -29,12 +29,12 @@ router.post("/", async (req, res) => {
     }
 
     const duplicado = await Product.findOne({
-      $or: [{ name: body.name }, { email: body.email }],
+      $or: [{ name: body.name }, { sku: body.sku }],
     });
 
     if (duplicado) {
       return res.status(409).send({
-        message: "El nombre o email ya existen",
+        message: "El nombre o sku ya existen",
         info: body,
       });
     }
@@ -49,12 +49,12 @@ router.post("/", async (req, res) => {
 });
 
 // Eliminar una tienda----------------------------------------------
-router.delete("/:name_email", async (req, res) => {
+router.delete("/:name_sku", async (req, res) => {
   try {
     new Log({
       date: new Date(),
       action: "DELETE",
-      source: "/products/:name_email",
+      source: "/products/:name_sku",
       params: {
         query: req.query || null,
         path: req.params || null,
@@ -63,9 +63,9 @@ router.delete("/:name_email", async (req, res) => {
       geoInfo: req.ipInfo,
     }).save();
 
-    const name_email = req.params.name_email;
+    const name_sku = req.params.name_sku;
     const exists = await Product.findOne({
-      $or: [{ name: name_email }, { email: name_email }],
+      $or: [{ name: name_sku }, { sku: name_sku }],
     });
 
     if (!exists) {

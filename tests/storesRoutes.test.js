@@ -1,11 +1,12 @@
 const request = require("supertest");
-const app = require("../server"); // Asegúrate de que exportas `app` en tu `server.js`
-const Store = require("../models/Store"); // Mockea el modelo `Store`
+const app = require("../server");
+const Store = require("../models/Store");
 const Backup = require("../models/Backup");
 
 // Mock para Store para evitar conexiones reales a la base de datos
 jest.mock("../models/Store");
 jest.mock("../models/Backup");
+jest.mock("../models/Log");
 
 describe("Pruebas para la ruta POST /api/stores", () => {
   it("Debería crear una nueva tienda con datos válidos", async () => {
@@ -18,10 +19,10 @@ describe("Pruebas para la ruta POST /api/stores", () => {
     };
 
     // Simula que no hay tiendas con el mismo nombre o email
-    Store.findOne.mockResolvedValue(null);
+    //Store.findOne.mockResolvedValue(null);
 
     // Simula la creación de la tienda
-    Store.prototype.save = jest.fn().mockResolvedValue(storeData);
+    //Store.prototype.save = jest.fn().mockResolvedValue(storeData);
 
     // Realiza la solicitud POST
     const response = await request(app).post("/api/stores").send(storeData);
@@ -83,8 +84,8 @@ describe("Pruebas para la ruta DELETE /api/stores/:name_email", () => {
 
     // Configura los mocks
     Store.findOne.mockResolvedValue(storeData); // Simula que la tienda existe
-    Backup.prototype.save = jest.fn().mockResolvedValue({}); // Simula el respaldo exitoso
-    Store.deleteOne = jest.fn().mockResolvedValue({ deletedCount: 1 }); // Simula la eliminación exitosa
+    //Backup.prototype.save = jest.fn().mockResolvedValue({}); // Simula el respaldo exitoso
+    //Store.deleteOne = jest.fn().mockResolvedValue({ deletedCount: 1 }); // Simula la eliminación exitosa
 
     // Realiza la solicitud DELETE
     const response = await request(app).delete(`/api/stores/${storeData.name}`);
