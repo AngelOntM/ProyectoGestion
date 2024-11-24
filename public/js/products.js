@@ -8,6 +8,7 @@ $(document).ready(function () {
       type: "GET",
       dataSrc: function (json) {
         productsData = json; // Guardar los datos obtenidos
+        console.log(productsData);
         return json;
       },
     },
@@ -22,12 +23,14 @@ $(document).ready(function () {
         title: "Acciones",
         render: function (data, type, row) {
           return `
-            <button class="btn btn-warning btn-sm edit-btn" data-sku="${row.sku}" title="Editar">
-              <i class="material-icons">edit</i>
-            </button>
-            <button class="btn btn-danger btn-sm delete-btn" data-sku="${row.sku}" title="Eliminar">
-              <i class="material-icons">delete</i>
-            </button>
+            <div class="d-inline-flex align-items-center">
+              <button class="btn btn-warning btn-md edit-btn me-2 d-flex justify-content-center align-items-center p-2" data-sku="${row.sku}" title="Editar">
+                <i class="material-icons" style="font-size: 24px; margin: 0 auto;">edit</i>
+              </button>
+              <button class="btn btn-danger btn-md delete-btn d-flex justify-content-center align-items-center p-2" data-sku="${row.sku}" title="Eliminar">
+                <i class="material-icons" style="font-size: 24px; margin: 0 auto;">delete</i>
+              </button>
+            </div>
           `;
         },
       },
@@ -42,10 +45,10 @@ $(document).ready(function () {
     const sku = $(this).data("sku");
 
     console.log(sku);
-    // Buscar los datos del producto usando el SKU
-    const product = productsData.find((product) => product.sku === sku);
 
-    console.log(product);
+    // Buscar los datos del producto usando el SKU
+    const product = productsData.find((product) => product.sku == sku);
+
     if (product) {
       // Rellenar los campos del formulario en el modal con los datos obtenidos
       $("#editProductSku").val(product.sku); // Usamos el SKU como identificador
@@ -61,6 +64,13 @@ $(document).ready(function () {
         icon: "error",
         title: "Error",
         text: "No se encontró el producto con ese SKU.",
+        customClass: {
+          popup: "custom-swal-popup", // Clase para el cuadro
+          title: "custom-swal-title", // Clase para el título
+          htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+          confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+          cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+        },
       });
     }
   });
@@ -70,10 +80,11 @@ $(document).ready(function () {
     e.preventDefault(); // Evitar el comportamiento por defecto
 
     const formData = {
-      name: $("#editName").val().trim(),
-      price: parseFloat($("#editPrice").val().trim()),
-      quantity: parseInt($("#editQuantity").val().trim()),
-      description: $("#editDescription").val().trim(),
+      name: $("#editProductName").val().trim(),
+      price: parseFloat($("#editProductPrice").val().trim()),
+      quantity: parseInt($("#editProductQuantity").val().trim()),
+      description: $("#editProductDescription").val().trim(),
+      sku: $("#editProductSku").val().trim(),
     };
 
     const sku = $("#editProductSku").val().trim();
@@ -91,6 +102,13 @@ $(document).ready(function () {
           text: "Los datos del producto se han actualizado correctamente.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
 
         // Cerrar el modal y recargar la tabla
@@ -106,6 +124,13 @@ $(document).ready(function () {
           icon: "error",
           title: "Error",
           text: errorText,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
       },
     });
@@ -124,10 +149,109 @@ $(document).ready(function () {
       cancelButtonText: "Cancelar",
       confirmButtonColor: "#28a745",
       cancelButtonColor: "#dc3545",
+      customClass: {
+        popup: "custom-swal-popup", // Clase para el cuadro
+        title: "custom-swal-title", // Clase para el título
+        htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+        confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+        cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         deleteProduct(sku);
       }
+    });
+  });
+
+  // Manejo del formulario de creación de producto
+  $("#createProductForm").on("submit", function (e) {
+    e.preventDefault(); // Evita el comportamiento por defecto del formulario
+
+    // Obtener los datos del formulario
+    const formData = {
+      name: $("#productName").val().trim(),
+      sku: $("#productSku").val().trim(),
+      description: $("#productDescription").val().trim(),
+      price: parseFloat($("#productPrice").val().trim()),
+      quantity: parseInt($("#productQuantity").val().trim()),
+    };
+
+    // Validación adicional (opcional, ya validado por atributos HTML)
+    if (
+      !formData.name ||
+      !formData.sku ||
+      isNaN(formData.price) ||
+      isNaN(formData.quantity)
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Por favor completa todos los campos correctamente.",
+        customClass: {
+          popup: "custom-swal-popup", // Clase para el cuadro
+          title: "custom-swal-title", // Clase para el título
+          htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+          confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+          cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+        },
+      });
+      return;
+    }
+
+    // Enviar los datos al servidor mediante una solicitud AJAX
+    $.ajax({
+      url: "api/products", // Endpoint para crear productos
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(formData), // Convertir los datos en JSON
+      success: function () {
+        Swal.fire({
+          icon: "success",
+          title: "Producto creado",
+          text: "El producto se ha creado correctamente.",
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
+        });
+
+        // Limpiar el formulario
+        $("#createProductForm")[0].reset();
+
+        // Cerrar el modal
+        $("#createProductModal").modal("hide");
+
+        // Recargar la tabla de productos
+        $("#datatable1").DataTable().ajax.reload();
+
+        console.log(productsData);
+
+        // Agregar los productos a la lista de productos
+        productsData.push(formData);
+      },
+      error: function (xhr) {
+        let errorText = "Ocurrió un error al crear el producto.";
+        if (xhr.status === 409) {
+          errorText = "El SKU ya existe. Intenta con otro valor.";
+        }
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorText,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
+        });
+      },
     });
   });
 
@@ -143,6 +267,13 @@ $(document).ready(function () {
           text: "El producto ha sido eliminado con éxito.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
         $("#datatable1").DataTable().ajax.reload();
       },
@@ -154,6 +285,13 @@ $(document).ready(function () {
             xhr.status === 404
               ? "No se encontró ningún producto con ese SKU."
               : "Ocurrió un error al eliminar el producto.",
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
       },
     });

@@ -8,6 +8,7 @@ $(document).ready(function () {
       type: "GET",
       dataSrc: function (json) {
         storesData = json; // Guardar todos los datos de la tienda en la variable storesData
+        console.log(storesData);
         return json;
       },
     },
@@ -22,12 +23,14 @@ $(document).ready(function () {
         title: "Acciones",
         render: function (data, type, row) {
           return `
-            <button class="btn btn-warning btn-sm edit-btn" data-email="${row.email}" title="Editar">
-              <i class="material-icons">edit</i>
-            </button>
-            <button class="btn btn-danger btn-sm delete-btn" data-email="${row.email}" title="Eliminar">
-              <i class="material-icons">delete</i>
-            </button>
+            <div class="d-inline-flex align-items-center">
+              <button class="btn btn-warning btn-md edit-btn me-2 d-flex justify-content-center align-items-center p-2" data-email="${row.email}" title="Editar">
+                <i class="material-icons" style="font-size: 24px; margin: 0 auto;">edit</i>
+              </button>
+              <button class="btn btn-danger btn-md delete-btn d-flex justify-content-center align-items-center p-2" data-email="${row.email}" title="Eliminar">
+                <i class="material-icons" style="font-size: 24px; margin: 0 auto;">delete</i>
+              </button>
+            </div>
           `;
         },
       },
@@ -60,8 +63,42 @@ $(document).ready(function () {
         icon: "error",
         title: "Error",
         text: "No se encontró la tienda con ese correo electrónico.",
+        customClass: {
+          popup: "custom-swal-popup", // Clase para el cuadro
+          title: "custom-swal-title", // Clase para el título
+          htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+          confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+          cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+        },
       });
     }
+  });
+
+  // Manejo del botón de eliminar
+  $("#datatable1").on("click", ".delete-btn", function () {
+    const email = $(this).data("email");
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará el producto de forma permanente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#dc3545",
+      customClass: {
+        popup: "custom-swal-popup", // Clase para el cuadro
+        title: "custom-swal-title", // Clase para el título
+        htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+        confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+        cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteStore(email);
+      }
+    });
   });
 
   // Manejo del formulario para editar la tienda
@@ -76,6 +113,7 @@ $(document).ready(function () {
       phone: $("#editPhone").val().trim(),
     };
 
+    console.log(formData);
     // Hacer una solicitud para actualizar la tienda
     $.ajax({
       url: `api/stores/${encodeURIComponent(formData.email)}`,
@@ -89,11 +127,20 @@ $(document).ready(function () {
           text: "Los datos de la tienda se han actualizado correctamente.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
 
         // Cerrar el modal y recargar la tabla
         $("#editStoreModal").modal("hide");
         $("#datatable1").DataTable().ajax.reload();
+        console.log("Recargando tabla");
+        console.log(storesData);
       },
       error: function (xhr) {
         const errorText =
@@ -109,23 +156,67 @@ $(document).ready(function () {
     });
   });
 
-  // Manejo del botón eliminar
-  $("#datatable1").on("click", ".delete-btn", function () {
-    const email = $(this).data("email");
+  // Manejo del formulario para crear una nueva tienda
+  $("#createStoreForm").on("submit", function (e) {
+    e.preventDefault(); // Evitar el comportamiento por defecto
 
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esta acción eliminará la tienda de forma permanente.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: "#28a745",
-      cancelButtonColor: "#dc3545",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteStore(email);
-      }
+    const formData = {
+      name: $("#name").val().trim(),
+      address: $("#address").val().trim(),
+      postal_number: $("#postal_number").val().trim(),
+      email: $("#email").val().trim(),
+      phone: $("#phone").val().trim(),
+    };
+
+    // Hacer una solicitud para crear una nueva tienda
+    $.ajax({
+      url: "api/stores",
+      type: "POST",
+      contentType: "application/json",
+      data: JSON.stringify(formData),
+      success: function () {
+        Swal.fire({
+          icon: "success",
+          title: "Tienda creada",
+          text: "La tienda se ha creado correctamente.",
+          timer: 2000,
+          showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
+        });
+
+        // Limpiar los campos del formulario y recargar la tabla
+        $("#createStoreForm")[0].reset();
+        $("#datatable1").DataTable().ajax.reload();
+        console.log("Recargando tabla");
+        console.log(storesData);
+
+        // Cerrar el modal
+        $("#createStoreModal").modal("hide");
+      },
+      error: function (xhr) {
+        const errorText =
+          xhr.status === 409
+            ? "El nombre o email ya existen. Intenta con otros valores."
+            : "Ocurrió un error al crear la tienda.";
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorText,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
+        });
+      },
     });
   });
 
@@ -138,20 +229,33 @@ $(document).ready(function () {
         Swal.fire({
           icon: "success",
           title: "Tienda eliminada",
-          text: "La tienda ha sido eliminada con éxito.",
+          text: "La tienda se ha eliminado correctamente.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
+
+        // Recargar la tabla
         $("#datatable1").DataTable().ajax.reload();
       },
-      error: function (xhr) {
+      error: function () {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text:
-            xhr.status === 404
-              ? "No se encontró ninguna tienda con ese correo electrónico."
-              : "Ocurrió un error al eliminar la tienda.",
+          text: "Ocurrió un error al eliminar la tienda.",
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
       },
     });

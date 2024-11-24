@@ -17,6 +17,10 @@
     font-size: 16px; /* Ajustar tamaño del ícono si es necesario */
 }
 
+button.edit-btn {
+  margin-right: 80px; /* Ajusta el valor según lo necesites */
+}
+
 /* Fondo del cuadro SweetAlert */
 .custom-swal-popup {
     background-color: #0c1427 !important; /* Fondo oscuro */
