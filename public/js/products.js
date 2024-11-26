@@ -24,10 +24,10 @@ $(document).ready(function () {
         render: function (data, type, row) {
           return `
             <div class="d-inline-flex align-items-center">
-              <button class="btn btn-warning btn-md edit-btn me-2 d-flex justify-content-center align-items-center p-2" data-sku="${row.sku}" title="Editar">
+              <button class="btn btn-warning btn-md edit-btn me-2 d-flex justify-content-center align-items-center p-2" data-id="${row._id}" title="Editar">
                 <i class="material-icons" style="font-size: 24px; margin: 0 auto;">edit</i>
               </button>
-              <button class="btn btn-danger btn-md delete-btn d-flex justify-content-center align-items-center p-2" data-sku="${row.sku}" title="Eliminar">
+              <button class="btn btn-danger btn-md delete-btn d-flex justify-content-center align-items-center p-2" data-id="${row._id}" title="Eliminar">
                 <i class="material-icons" style="font-size: 24px; margin: 0 auto;">delete</i>
               </button>
             </div>
@@ -42,16 +42,15 @@ $(document).ready(function () {
 
   // Manejo del botón de editar
   $("#datatable1").on("click", ".edit-btn", function () {
-    const sku = $(this).data("sku");
-
-    console.log(sku);
+    const id = $(this).data("id");
 
     // Buscar los datos del producto usando el SKU
-    const product = productsData.find((product) => product.sku == sku);
+    const product = productsData.find((product) => product._id == id);
 
     if (product) {
       // Rellenar los campos del formulario en el modal con los datos obtenidos
-      $("#editProductSku").val(product.sku); // Usamos el SKU como identificador
+      $("#editProductId").val(product._id); // Usamos el id como identificador
+      $("#editProductSku").val(product.sku);
       $("#editProductName").val(product.name);
       $("#editProductPrice").val(product.price);
       $("#editProductQuantity").val(product.quantity);
@@ -79,6 +78,7 @@ $(document).ready(function () {
   $("#editProductForm").on("submit", function (e) {
     e.preventDefault(); // Evitar el comportamiento por defecto
 
+    const id = $("#editProductId").val().trim();
     const formData = {
       name: $("#editProductName").val().trim(),
       price: parseFloat($("#editProductPrice").val().trim()),
@@ -87,11 +87,8 @@ $(document).ready(function () {
       sku: $("#editProductSku").val().trim(),
     };
 
-    const sku = $("#editProductSku").val().trim();
-
-    // Hacer una solicitud para actualizar el producto
     $.ajax({
-      url: `api/products/${encodeURIComponent(sku)}`, // El SKU se envía como parte de la URL
+      url: `api/products/${encodeURIComponent(id)}`, // El SKU se envía como parte de la URL
       type: "PUT",
       contentType: "application/json",
       data: JSON.stringify(formData),
@@ -138,8 +135,7 @@ $(document).ready(function () {
 
   // Manejo del botón eliminar
   $("#datatable1").on("click", ".delete-btn", function () {
-    const sku = $(this).data("sku");
-    console.log(sku);
+    const id = $(this).data("id");
     Swal.fire({
       title: "¿Estás seguro?",
       text: "Esta acción eliminará el producto de forma permanente.",
@@ -158,16 +154,15 @@ $(document).ready(function () {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteProduct(sku);
+        deleteProduct(id);
       }
     });
   });
 
   // Manejo del formulario de creación de producto
   $("#createProductForm").on("submit", function (e) {
-    e.preventDefault(); // Evita el comportamiento por defecto del formulario
+    e.preventDefault();
 
-    // Obtener los datos del formulario
     const formData = {
       name: $("#productName").val().trim(),
       sku: $("#productSku").val().trim(),
@@ -176,34 +171,11 @@ $(document).ready(function () {
       quantity: parseInt($("#productQuantity").val().trim()),
     };
 
-    // Validación adicional (opcional, ya validado por atributos HTML)
-    if (
-      !formData.name ||
-      !formData.sku ||
-      isNaN(formData.price) ||
-      isNaN(formData.quantity)
-    ) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Por favor completa todos los campos correctamente.",
-        customClass: {
-          popup: "custom-swal-popup", // Clase para el cuadro
-          title: "custom-swal-title", // Clase para el título
-          htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
-          confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
-          cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
-        },
-      });
-      return;
-    }
-
-    // Enviar los datos al servidor mediante una solicitud AJAX
     $.ajax({
-      url: "api/products", // Endpoint para crear productos
+      url: "api/products",
       type: "POST",
       contentType: "application/json",
-      data: JSON.stringify(formData), // Convertir los datos en JSON
+      data: JSON.stringify(formData),
       success: function () {
         Swal.fire({
           icon: "success",
@@ -211,28 +183,11 @@ $(document).ready(function () {
           text: "El producto se ha creado correctamente.",
           timer: 2000,
           showConfirmButton: false,
-          customClass: {
-            popup: "custom-swal-popup", // Clase para el cuadro
-            title: "custom-swal-title", // Clase para el título
-            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
-            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
-            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
-          },
         });
 
-        // Limpiar el formulario
         $("#createProductForm")[0].reset();
-
-        // Cerrar el modal
-        $("#createProductModal").modal("hide");
-
-        // Recargar la tabla de productos
         $("#datatable1").DataTable().ajax.reload();
-
-        console.log(productsData);
-
-        // Agregar los productos a la lista de productos
-        productsData.push(formData);
+        $("#createProductModal").modal("hide");
       },
       error: function (xhr) {
         let errorText = "Ocurrió un error al crear el producto.";
@@ -256,9 +211,9 @@ $(document).ready(function () {
   });
 
   // Función para eliminar un producto
-  function deleteProduct(sku) {
+  function deleteProduct(id) {
     $.ajax({
-      url: `api/products/${encodeURIComponent(sku)}`,
+      url: `api/products/${encodeURIComponent(id)}`,
       type: "DELETE",
       success: function () {
         Swal.fire({
@@ -267,31 +222,15 @@ $(document).ready(function () {
           text: "El producto ha sido eliminado con éxito.",
           timer: 2000,
           showConfirmButton: false,
-          customClass: {
-            popup: "custom-swal-popup", // Clase para el cuadro
-            title: "custom-swal-title", // Clase para el título
-            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
-            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
-            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
-          },
         });
+
         $("#datatable1").DataTable().ajax.reload();
       },
-      error: function (xhr) {
+      error: function () {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text:
-            xhr.status === 404
-              ? "No se encontró ningún producto con ese SKU."
-              : "Ocurrió un error al eliminar el producto.",
-          customClass: {
-            popup: "custom-swal-popup", // Clase para el cuadro
-            title: "custom-swal-title", // Clase para el título
-            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
-            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
-            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
-          },
+          text: "Ocurrió un error al eliminar la tienda.",
         });
       },
     });

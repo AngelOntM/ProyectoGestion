@@ -49,12 +49,13 @@ router.post("/", async (req, res) => {
 });
 
 // Eliminar una tienda----------------------------------------------
-router.delete("/:name_sku", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
+    // Registrar el log
     new Log({
       date: new Date(),
       action: "DELETE",
-      source: "/products/:name_sku",
+      source: "/products/:id",
       params: {
         query: req.query || null,
         path: req.params || null,
@@ -63,31 +64,39 @@ router.delete("/:name_sku", async (req, res) => {
       geoInfo: req.ipInfo,
     }).save();
 
-    const name_sku = req.params.name_sku;
-    const exists = await Product.findOne({
-      $or: [{ name: name_sku }, { sku: name_sku }],
-    });
+    const id = req.params.id;
+
+    // Validar el formato del ID
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .send({ message: "El ID proporcionado no es válido" });
+    }
+
+    // Verificar si el producto existe
+    const exists = await Product.findById(id);
 
     if (!exists) {
       return res.status(404).send({
-        message: "El nombre o email de la tienda no existe",
+        message: "El producto con el ID especificado no existe",
       });
     }
 
-    // Respaldar la tienda antes de eliminarla
+    // Respaldar el producto antes de eliminarlo
     const backup = new Backup({
       registro: exists.toObject(),
-      sourceType: "Store",
+      sourceType: "Product",
       sourceId: exists._id,
     });
     await backup.save();
 
-    // Eliminar la tienda
-    await Product.deleteOne({ _id: exists._id });
+    // Eliminar el producto
+    await Product.deleteOne({ _id: id });
 
     res.send({ deleted: true });
   } catch (error) {
-    console.error("Error al eliminar la tienda:", error);
+    console.error("Error al eliminar el producto:", error);
     res.status(500).send({ error: "Error interno del servidor" });
   }
 });
@@ -116,12 +125,13 @@ router.get("/", async (req, res) => {
 });
 
 // Modificar una tienda----------------------------------------------
-router.put("/:name_sku", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
+    // Registrar el log
     new Log({
       date: new Date(),
       action: "PUT",
-      source: "/stores/:name_sku",
+      source: "/products/:id",
       params: {
         query: req.query || null,
         path: req.params || null,
@@ -130,39 +140,49 @@ router.put("/:name_sku", async (req, res) => {
       geoInfo: req.ipInfo,
     }).save();
 
-    const name_sku = req.params.name_sku;
-    const exists = await Product.findOne({
-      $or: [{ name: name_sku }, { sku: name_sku }],
-    });
+    const id = req.params.id;
+
+    // Validar el formato del ID
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .send({ message: "El ID proporcionado no es válido" });
+    }
+
+    // Verificar si el producto existe
+    const exists = await Product.findById(id);
 
     if (!exists) {
       return res.status(404).send({
-        message: "El nombre o email de la tienda no existe",
+        message: "El producto con el ID especificado no existe",
       });
     }
 
     const body = req.body;
-    const validate = productsValidation.newProduct(body);
 
+    // Validar el cuerpo de la solicitud
+    const validate = productsValidation.updateProduct(body);
     if (validate.error) {
       return res.status(400).send({ error: validate.error.details });
     }
 
-    // Respaldar la tienda antes de modificarla
+    // Respaldar el producto antes de modificarlo
     const backup = new Backup({
       registro: exists.toObject(),
-      sourceType: "Store",
+      sourceType: "Product",
       sourceId: exists._id,
     });
     await backup.save();
 
-    // Modificar la tienda
-    await Product.updateOne({ _id: exists._id }, body);
+    // Modificar el producto
+    await Product.updateOne({ _id: id }, body);
 
     res.send({ modified: true });
   } catch (error) {
-    console.error("Error al modificar la tienda:", error);
+    console.error("Error al modificar el producto:", error);
     res.status(500).send({ error: "Error interno del servidor" });
   }
 });
+
 module.exports = router;

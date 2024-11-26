@@ -14,6 +14,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0, // No se permite un precio negativo
+      precision: 2, // Máximo de 2 decimales
     },
     description: {
       type: String,

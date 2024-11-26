@@ -10,5 +10,6 @@
     ]
   ],
   "verbose": true,
+  "silent": true,
   "testTimeout": 30000
 }

@@ -1,18 +1,33 @@
-require("dotenv").config(); // Carga las variables de entorno desde un archivo .env
-
 const express = require("express");
-const mongoose = require("mongoose");
-const expressip = require("express-ip");
-
-const app = express();
-app.use(expressip().getIpInfoMiddleware);
-app.use(express.json());
-app.use(express.static(__dirname + "/public"));
+const connectToDatabase = require("./database/mongoose");
+const { config, ENV } = require("./config");
 
 const storesRouter = require("./routers/stores.routes");
 const productsRouter = require("./routers/products.routes");
 const Log = require("./models/Log");
+const Backup = require("./models/Backup");
 
+const app = express(); // Crear la instancia de la app Express
+
+// Función para iniciar el servidor
+app.use(express.static(__dirname + "/public"));
+
+// Conectar a la base de datos
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    next();
+  } catch (error) {
+    console.error("Error connecting to database:", error);
+    res.status(500).send({ message: "Error connecting to database" });
+  }
+});
+
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rutas
 app.use("/api/stores", storesRouter);
 app.use("/api/products", productsRouter);
 
@@ -26,36 +41,22 @@ app.use("/logs", async (req, res) => {
   }
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ message: "Algo salió mal." });
-});
-
-// Usando variables de entorno para puerto y configuración de MongoDB
-const PORT = process.env.PORT || 8080;
-const MONGO_HOST = process.env.MONGO_HOST || "mongodb://localhost:27017";
-const MONGO_DB = process.env.MONGO_DB || "Gestion";
-const MONGO_PARAMS = process.env.MONGO_PARAMS || "";
-
-app.listen(PORT, (error) => {
-  if (error) {
-    console.error("Error starting server:", error);
-    process.exit(1);
+app.use("/backups", async (req, res) => {
+  try {
+    const backups = await Backup.find({});
+    res.send(backups);
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving backups" });
   }
-
-  console.log(`Servidor corriendo en el puerto: ${PORT}`);
-
-  const mongoURI = `${MONGO_HOST}/${MONGO_DB}${MONGO_PARAMS}`;
-
-  mongoose
-    .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-      console.log(`Conectado a MongoDB: ${mongoURI}`);
-    })
-    .catch((error) => {
-      console.error("Error al conectar a MongoDB:", error);
-      process.exit(1);
-    });
 });
 
+// Iniciar servidor
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(
+    `Servidor corriendo en ${config.baseUrl}:${PORT} (Entorno: ${ENV})`
+  );
+});
+
+// Exportar la aplicación y la función para iniciar el servidor
 module.exports = app;

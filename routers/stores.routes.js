@@ -49,12 +49,13 @@ router.post("/", async (req, res) => {
 });
 
 // Eliminar una tienda----------------------------------------------
-router.delete("/:name_email", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
+    // Registrar el log
     new Log({
       date: new Date(),
       action: "DELETE",
-      source: "/stores/:name_email",
+      source: "/stores/:id",
       params: {
         query: req.query || null,
         path: req.params || null,
@@ -63,14 +64,14 @@ router.delete("/:name_email", async (req, res) => {
       geoInfo: req.ipInfo,
     }).save();
 
-    const name_email = req.params.name_email;
-    const exists = await Store.findOne({
-      $or: [{ name: name_email }, { email: name_email }],
-    });
+    const id = req.params.id;
+
+    // Verificar si la tienda existe
+    const exists = await Store.findById(id);
 
     if (!exists) {
       return res.status(404).send({
-        message: "El nombre o email de la tienda no existe",
+        message: "La tienda con el ID especificado no existe",
       });
     }
 
@@ -83,7 +84,7 @@ router.delete("/:name_email", async (req, res) => {
     await backup.save();
 
     // Eliminar la tienda
-    await Store.deleteOne({ _id: exists._id });
+    await Store.deleteOne({ _id: id });
 
     res.status(202).send({ deleted: true });
   } catch (error) {
@@ -116,12 +117,13 @@ router.get("/", async (req, res) => {
 });
 
 // Modificar una tienda----------------------------------------------
-router.put("/:name_email", async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
+    // Registrar el log
     new Log({
       date: new Date(),
       action: "PUT",
-      source: "/stores/:name_email",
+      source: "/stores/:id",
       params: {
         query: req.query || null,
         path: req.params || null,
@@ -130,20 +132,29 @@ router.put("/:name_email", async (req, res) => {
       geoInfo: req.ipInfo,
     }).save();
 
-    const name_email = req.params.name_email;
-    const exists = await Store.findOne({
-      $or: [{ name: name_email }, { email: name_email }],
-    });
+    const id = req.params.id;
+
+    // Validar el formato del ID
+    const mongoose = require("mongoose");
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .send({ message: "El ID proporcionado no es válido" });
+    }
+
+    // Verificar si la tienda existe
+    const exists = await Store.findById(id);
 
     if (!exists) {
       return res.status(404).send({
-        message: "El nombre o email de la tienda no existe",
+        message: "La tienda con el ID especificado no existe",
       });
     }
 
     const body = req.body;
-    const validate = storesValidation.newStore(body);
 
+    // Validar los datos del cuerpo
+    const validate = storesValidation.updateStore(body);
     if (validate.error) {
       return res.status(400).send({ error: validate.error.details });
     }
@@ -157,7 +168,7 @@ router.put("/:name_email", async (req, res) => {
     await backup.save();
 
     // Modificar la tienda
-    await Store.updateOne({ _id: exists._id }, body);
+    await Store.updateOne({ _id: id }, body);
 
     res.send({ modified: true });
   } catch (error) {

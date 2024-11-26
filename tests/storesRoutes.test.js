@@ -1,14 +1,36 @@
 const request = require("supertest");
-const app = require("../server");
+const app = require("../server.js");
+const mongoose = require("mongoose");
 const Store = require("../models/Store");
-const Backup = require("../models/Backup");
 
-// Mock para Store para evitar conexiones reales a la base de datos
-jest.mock("../models/Store");
-jest.mock("../models/Backup");
-jest.mock("../models/Log");
+//Datos de de prueba antes de cada test
+const initialData = [
+  {
+    name: "Tienda 1",
+    address: "Calle Principal 123",
+    postal_number: "12345",
+    email: "ajoman@gmail.com",
+    phone: "1234567890",
+  },
+  {
+    name: "Tienda 2",
+    address: "Calle Secundaria 456",
+    postal_number: "54321",
+    email: "postal@gmail.com",
+    phone: "0987654321",
+  },
+];
 
-describe("Pruebas para la ruta POST /api/stores", () => {
+beforeEach(async () => {
+  await Store.deleteMany({});
+  await Store.insertMany(initialData);
+});
+
+describe("POST /api/stores", () => {
+  afterEach(async () => {
+    await mongoose.connection.dropDatabase(); // Limpia la base de datos
+  });
+
   it("Debería crear una nueva tienda con datos válidos", async () => {
     const storeData = {
       name: "Tienda ABC",
@@ -18,13 +40,6 @@ describe("Pruebas para la ruta POST /api/stores", () => {
       phone: "1234567890",
     };
 
-    // Simula que no hay tiendas con el mismo nombre o email
-    //Store.findOne.mockResolvedValue(null);
-
-    // Simula la creación de la tienda
-    //Store.prototype.save = jest.fn().mockResolvedValue(storeData);
-
-    // Realiza la solicitud POST
     const response = await request(app).post("/api/stores").send(storeData);
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("created", true);
@@ -55,10 +70,7 @@ describe("Pruebas para la ruta POST /api/stores", () => {
       phone: "1234567890",
     };
 
-    // Simula que ya existe una tienda con ese nombre o email
-    Store.findOne.mockResolvedValue(storeData);
-    Store.prototype.save = jest.fn().mockResolvedValue(storeData);
-
+    await request(app).post("/api/stores").send(storeData);
     const response = await request(app).post("/api/stores").send(storeData);
     expect(response.status).toBe(409);
     expect(response.body).toHaveProperty(
@@ -68,56 +80,37 @@ describe("Pruebas para la ruta POST /api/stores", () => {
   });
 });
 
-describe("Pruebas para la ruta DELETE /api/stores/:name_email", () => {
+describe("DELETE /api/stores/:name_email", () => {
   it("Debería eliminar una tienda existente por nombre y respaldar antes de eliminarla", async () => {
     const storeData = {
-      _id: "123",
       name: "Tienda ABC",
       address: "Calle Principal 123",
       postal_number: "12345",
       email: "tienda@example.com",
       phone: "1234567890",
-      toObject: function () {
-        return { ...this };
-      }, // Simula el método `toObject`
     };
 
-    // Configura los mocks
-    Store.findOne.mockResolvedValue(storeData); // Simula que la tienda existe
-    //Backup.prototype.save = jest.fn().mockResolvedValue({}); // Simula el respaldo exitoso
-    //Store.deleteOne = jest.fn().mockResolvedValue({ deletedCount: 1 }); // Simula la eliminación exitosa
-
-    // Realiza la solicitud DELETE
+    await request(app).post("/api/stores").send(storeData); // Crea la tienda
     const response = await request(app).delete(`/api/stores/${storeData.name}`);
 
     // Verifica el estado y la respuesta
     expect(response.status).toBe(202);
     expect(response.body).toHaveProperty("deleted", true);
 
-    // Verifica que se haya llamado al respaldo antes de eliminar
-    expect(Backup.prototype.save).toHaveBeenCalled();
-    expect(Store.deleteOne).toHaveBeenCalledWith({ _id: storeData._id });
+    // Verifica que Backup.create haya sido llamado
+    expect(Backup.create).toHaveBeenCalled();
   });
 
   it("Debería eliminar una tienda existente por email y respaldar antes de eliminarla", async () => {
     const storeData = {
-      _id: "123",
       name: "Tienda ABC",
       address: "Calle Principal 123",
       postal_number: "12345",
       email: "tienda@example.com",
       phone: "1234567890",
-      toObject: function () {
-        return { ...this };
-      }, // Simula el método `toObject`
     };
 
-    // Configura los mocks
-    Store.findOne.mockResolvedValue(storeData); // Simula que la tienda existe
-    Backup.prototype.save = jest.fn().mockResolvedValue({}); // Simula el respaldo exitoso
-    Store.deleteOne = jest.fn().mockResolvedValue({ deletedCount: 1 }); // Simula la eliminación exitosa
-
-    // Realiza la solicitud DELETE
+    await request(app).post("/api/stores").send(storeData); // Crea la tienda
     const response = await request(app).delete(
       `/api/stores/${storeData.email}`
     );
@@ -125,15 +118,9 @@ describe("Pruebas para la ruta DELETE /api/stores/:name_email", () => {
     // Verifica el estado y la respuesta
     expect(response.status).toBe(202);
     expect(response.body).toHaveProperty("deleted", true);
-
-    // Verifica que se haya llamado al respaldo antes de eliminar
-    expect(Backup.prototype.save).toHaveBeenCalled();
-    expect(Store.deleteOne).toHaveBeenCalledWith({ _id: storeData._id });
   });
 
   it("Debería retornar un error 404 si la tienda no existe", async () => {
-    Store.findOne.mockResolvedValue(null); // Simula que la tienda no existe
-
     const response = await request(app).delete("/api/stores/NoExistente");
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty(
@@ -143,7 +130,7 @@ describe("Pruebas para la ruta DELETE /api/stores/:name_email", () => {
   });
 });
 
-describe("Pruebas para la ruta GET /api/stores", () => {
+describe("GET /api/stores", () => {
   it("Debería devolver todas las tiendas con estado 200", async () => {
     const storeData = [
       {
@@ -168,7 +155,7 @@ describe("Pruebas para la ruta GET /api/stores", () => {
     Store.find.mockResolvedValue(storeData);
 
     // Realiza la solicitud GET
-    const response = await request(app).get("/api/stores");
+    const response = await request(app).get("/api/stores").send();
 
     // Verifica el estado y la respuesta
     expect(response.status).toBe(200);
@@ -177,7 +164,7 @@ describe("Pruebas para la ruta GET /api/stores", () => {
   });
 });
 
-describe("Pruebas para la ruta PUT /api/stores/:name_email", () => {
+describe("PUT /api/stores/:name_email", () => {
   it("Debería modificar una tienda existente", async () => {
     const name_email = "tienda@example.com";
     const storeData = {
@@ -205,9 +192,6 @@ describe("Pruebas para la ruta PUT /api/stores/:name_email", () => {
 
     // Simula que `findOne` devuelve un documento de Mongoose
     Store.findOne.mockResolvedValue(storeDocument);
-
-    // Simula que el backup se guarda correctamente
-    Backup.prototype.save.mockResolvedValue();
 
     // Simula que la tienda se actualiza
     Store.updateOne.mockResolvedValue({ modifiedCount: 1 });
