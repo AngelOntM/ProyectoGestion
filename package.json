@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --entorno=test",
-    "test:watch": "npm run test -- --watch",
+    "test:watch": "npm run test --entorno=test -- --watch",
     "start": "node server.js --entorno=dev",
     "start:dev": "node server.js --entorno=dev",
     "start:test": "node server.js --entorno=test",
