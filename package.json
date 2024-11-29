@@ -25,6 +25,7 @@
     "geckodriver": "^4.5.1",
     "jest-html-reporter": "^3.10.2",
     "joi": "^17.13.3",
+    "minimist": "^1.2.8",
     "mocha": "^10.7.3",
     "mochawesome": "^7.1.3",
     "mongoose": "^8.8.2",

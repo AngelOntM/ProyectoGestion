@@ -62,6 +62,13 @@ $(document).ready(function () {
         icon: "error",
         title: "Error",
         text: "No se encontró la tienda con ese ID.",
+        customClass: {
+          popup: "custom-swal-popup", // Clase para el cuadro
+          title: "custom-swal-title", // Clase para el título
+          htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+          confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+          cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+        },
       });
     }
   });
@@ -79,6 +86,13 @@ $(document).ready(function () {
       cancelButtonText: "Cancelar",
       confirmButtonColor: "#28a745",
       cancelButtonColor: "#dc3545",
+      customClass: {
+        popup: "custom-swal-popup", // Clase para el cuadro
+        title: "custom-swal-title", // Clase para el título
+        htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+        confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+        cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         deleteStore(id);
@@ -111,6 +125,13 @@ $(document).ready(function () {
           text: "Los datos de la tienda se han actualizado correctamente.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
 
         $("#editStoreModal").modal("hide");
@@ -125,6 +146,13 @@ $(document).ready(function () {
           icon: "error",
           title: "Error",
           text: errorText,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
       },
     });
@@ -154,6 +182,13 @@ $(document).ready(function () {
           text: "La tienda se ha creado correctamente.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
 
         $("#createStoreForm")[0].reset();
@@ -169,6 +204,13 @@ $(document).ready(function () {
           icon: "error",
           title: "Error",
           text: errorText,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
       },
     });
@@ -186,6 +228,13 @@ $(document).ready(function () {
           text: "La tienda se ha eliminado correctamente.",
           timer: 2000,
           showConfirmButton: false,
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
 
         $("#datatable1").DataTable().ajax.reload();
@@ -195,6 +244,13 @@ $(document).ready(function () {
           icon: "error",
           title: "Error",
           text: "Ocurrió un error al eliminar la tienda.",
+          customClass: {
+            popup: "custom-swal-popup", // Clase para el cuadro
+            title: "custom-swal-title", // Clase para el título
+            htmlContainer: "custom-swal-content", // Clase para el contenido del mensaje
+            confirmButton: "swal2-confirm btn-success", // Clase para el botón de confirmación
+            cancelButton: "swal2-cancel btn-danger", // Clase para el botón de cancelar
+          },
         });
       },
     });
