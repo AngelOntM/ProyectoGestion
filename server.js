@@ -1,3 +1,4 @@
+//server.js
 const { config, ENV } = require("./config");
 
 const app = require("./app"); // Crear la instancia de la app Express

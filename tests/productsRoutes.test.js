@@ -1,7 +1,6 @@
 const request = require("supertest");
 const app = require("../app.js");
 const Product = require("../models/Product.js");
-const mongoose = require("mongoose");
 
 // Datos de prueba iniciales
 const initialProducts = [
@@ -28,10 +27,6 @@ const newProduct = {
   description: "Descripción del producto nuevo",
   sku: "SKU003",
   quantity: 15,
-};
-
-const productSet = async () => {
-  await Product.insertMany(initialProducts);
 };
 
 const productDelete = async () => {
@@ -111,7 +106,9 @@ describe("DELETE /api/products/:id", () => {
 
 describe("GET /api/products", () => {
   it("Debería devolver todos los productos con estado 200", async () => {
-    await productSet();
+    await Product.insertMany(initialProducts);
+    //Esperar que la peticion anterior se termine
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const response = await request(app).get("/api/products");
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(initialProducts.length);

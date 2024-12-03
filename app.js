@@ -1,3 +1,4 @@
+//app.js
 const express = require("express");
 const connectToDatabase = require("./database/mongoose");
 const { config, ENV } = require("./config");
@@ -13,15 +14,7 @@ const app = express(); // Crear la instancia de la app Express
 app.use(express.static(__dirname + "/public"));
 
 // Conectar a la base de datos
-app.use(async (req, res, next) => {
-  try {
-    await connectToDatabase();
-    next();
-  } catch (error) {
-    console.error("Error connecting to database:", error);
-    res.status(500).send({ message: "Error connecting to database" });
-  }
-});
+connectToDatabase();
 
 // Middlewares
 app.use(express.json());
