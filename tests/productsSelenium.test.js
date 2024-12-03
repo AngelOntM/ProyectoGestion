@@ -1,4 +1,5 @@
-const { Builder, By, until } = require("selenium-webdriver");
+const { Builder, Browser, By, until } = require("selenium-webdriver");
+const chrome = require("selenium-webdriver/chrome");
 
 const TIMEOUT = 5000; // Tiempo máximo para esperar elementos
 
@@ -9,9 +10,7 @@ async function clickElement(driver, locator, description) {
     await driver.wait(until.elementIsVisible(element), TIMEOUT);
     await driver.wait(until.elementIsEnabled(element), TIMEOUT);
     await element.click();
-    console.log(`✅ Se hizo clic en: ${description}`);
   } catch (error) {
-    console.error(`❌ Error al interactuar con: ${description}`, error);
     throw error; // Lanza el error para marcar la prueba como fallida
   }
 }
@@ -21,16 +20,22 @@ describe("Pruebas de la pagina de Productos", () => {
 
   // Configuración inicial antes de las pruebas
   beforeAll(async () => {
-    driver = await new Builder().forBrowser("MicrosoftEdge").build();
-    await driver.manage().window().maximize(); // Maximiza la ventana del navegador
+    driver = await new Builder()
+      .forBrowser(Browser.CHROME)
+      .setChromeOptions(
+        new chrome.Options().addArguments(
+          "--headless=new",
+          "--headless",
+          "--no-sandbox",
+          "--window-size=1920x1080"
+        )
+      )
+      .build();
     await driver.get("http://localhost:8080/");
-    console.log("🚀 Navegador inicializado y página cargada.");
   });
 
   // Finalización después de las pruebas
   afterAll(async () => {
-    console.log("🛑 Navegador cerrado.");
-
     // Esperar 5 segundos para cerrar el navegador
     await new Promise((resolve) => setTimeout(resolve, 3000));
     await driver.quit();
@@ -64,7 +69,6 @@ describe("Pruebas de la pagina de Productos", () => {
       TIMEOUT
     );
     await driver.wait(until.elementIsVisible(modal), TIMEOUT);
-    console.log("✅ Modal visible.");
 
     // Rellenar los campos del formulario
     await fillInputField(
@@ -102,7 +106,6 @@ describe("Pruebas de la pagina de Productos", () => {
     await driver.wait(until.elementIsVisible(submitButton), TIMEOUT);
     await driver.wait(until.elementIsEnabled(submitButton), TIMEOUT);
     await submitButton.click();
-    console.log("✅ Formulario enviado.");
   });
 
   it("Debería eliminar una tienda de la lista, si no existe ninguna, no hacer nada", async () => {
@@ -129,7 +132,6 @@ describe("Pruebas de la pagina de Productos", () => {
       );
 
       await deleteButton.click();
-      console.log("✅ Se hizo clic en el botón de eliminar.");
 
       // Confirmar la eliminación
       const confirmButton = await driver.wait(
@@ -137,9 +139,7 @@ describe("Pruebas de la pagina de Productos", () => {
         TIMEOUT
       );
       await confirmButton.click();
-      console.log("✅ Confirmación enviada.");
     } catch (error) {
-      console.error("❌ Error al intentar eliminar una tienda.", error);
       throw error;
     }
   });
@@ -155,9 +155,7 @@ async function fillInputField(driver, locator, value, description) {
     await driver.wait(until.elementIsEnabled(inputField), TIMEOUT);
     await inputField.clear(); // Limpiar el campo antes de enviar datos
     await inputField.sendKeys(value);
-    console.log(`✅ Campo rellenado: ${description}`);
   } catch (error) {
-    console.error(`❌ Error al rellenar el campo: ${description}`, error);
     throw error;
   }
 }

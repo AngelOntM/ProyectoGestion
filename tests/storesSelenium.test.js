@@ -20,8 +20,17 @@ describe("Pruebas de la pagina de Tiendas", () => {
 
   // Configuración inicial antes de las pruebas
   beforeAll(async () => {
-    driver = await new Builder().forBrowser("MicrosoftEdge").build();
-    await driver.manage().window().maximize(); // Maximiza la ventana del navegador
+    driver = await new Builder()
+      .forBrowser(Browser.CHROME)
+      .setChromeOptions(
+        new chrome.Options().addArguments(
+          "--headless=new",
+          "--headless",
+          "--no-sandbox",
+          "--window-size=1920x1080"
+        )
+      )
+      .build();
     await driver.get("http://localhost:8080/");
   });
 

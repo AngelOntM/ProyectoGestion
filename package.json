@@ -16,7 +16,7 @@
   "description": "",
   "dependencies": {
     "chai": "^4.4.1",
-    "chromedriver": "^131.0.0",
+    "chromedriver": "^131.0.1",
     "dotenv": "^16.4.5",
     "edgedriver": "^5.6.1",
     "express": "^4.21.0",
