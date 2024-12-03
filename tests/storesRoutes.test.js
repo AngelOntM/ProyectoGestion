@@ -28,21 +28,11 @@ const testData = {
   phone: "5432167890",
 };
 
-const storeSet = async () => {
-  await Store.insertMany(initialData);
-};
-
 const storeDelete = async () => {
   await Store.deleteMany({});
 };
 
-beforeEach(async () => {
-  storeDelete().then(() => {
-    storeSet();
-  });
-});
-
-afterAll(async () => {
+afterEach(async () => {
   storeDelete();
 });
 
@@ -51,22 +41,6 @@ describe("POST /api/stores", () => {
     const response = await request(app).post("/api/stores").send(testData);
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("created", true);
-  });
-
-  it("Debería retornar un error 400 si los datos de la tienda son inválidos", async () => {
-    const invalidStoreData = {
-      name: "AB", // Nombre muy corto
-      address: "Calle Principal",
-      postal_number: "123", // Número postal inválido
-      email: "no-un-email", // Email no válido
-      phone: "12345", // Teléfono muy corto
-    };
-
-    const response = await request(app)
-      .post("/api/stores")
-      .send(invalidStoreData);
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty("error");
   });
 
   it("Debería retornar un error 409 si el nombre o email ya existen", async () => {
@@ -86,13 +60,29 @@ describe("POST /api/stores", () => {
       "El nombre o email ya existen"
     );
   });
+
+  it("Debería retornar un error 400 si los datos de la tienda son inválidos", async () => {
+    const invalidStoreData = {
+      name: "AB", // Nombre muy corto
+      address: "Calle Principal",
+      postal_number: "123", // Número postal inválido
+      email: "no-un-email", // Email no válido
+      phone: "12345", // Teléfono muy corto
+    };
+
+    const response = await request(app)
+      .post("/api/stores")
+      .send(invalidStoreData);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("error");
+  });
 });
 
-describe("DELETE /api/stores/:name_email", () => {
-  it("Debería eliminar una tienda existente por nombre y respaldar antes de eliminarla", async () => {
-    const response1 = await request(app).get("/api/stores").send();
+describe("DELETE /api/stores/:id", () => {
+  it("Debería eliminar una tienda existente", async () => {
+    const response1 = await request(app).post("/api/stores").send(testData);
     const response = await request(app).delete(
-      `/api/stores/${response1.body[0]._id}`
+      `/api/stores/${response1.body.store._id}`
     );
 
     // Verifica el estado y la respuesta
@@ -114,28 +104,21 @@ describe("DELETE /api/stores/:name_email", () => {
 
 describe("GET /api/stores", () => {
   it("Debería devolver todas las tiendas con estado 200", async () => {
-    const response = await request(app).get("/api/stores").send();
-
-    // Verifica el estado y la respuesta
+    await Store.insertMany(initialData);
+    //Esperar que la peticion anterior se termine
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await request(app).get("/api/stores");
     expect(response.status).toBe(200);
     expect(response.body).toHaveLength(initialData.length); // Verifica que el número de tiendas sea correcto
   });
 });
 
-describe("PUT /api/stores/:name_email", () => {
+describe("PUT /api/stores/:id", () => {
   it("Debería modificar una tienda existente", async () => {
-    updatedStoreData = {
-      name: "Tienda Actualizada",
-      address: "Calle Actualizada 456",
-      postal_number: "67890",
-      email: "email@prueba.com",
-      phone: "0987654321",
-    };
-
-    const response1 = await request(app).get("/api/stores").send();
+    const response1 = await request(app).post("/api/stores").send(testData);
     const response = await request(app)
-      .put(`/api/stores/${response1.body[0]._id}`)
-      .send(updatedStoreData);
+      .put(`/api/stores/${response1.body.store._id}`)
+      .send(testData);
 
     // Verifica el estado y la respuesta
     expect(response.status).toBe(200);
@@ -165,7 +148,7 @@ describe("PUT /api/stores/:name_email", () => {
   });
 
   it("Debería retornar un error 400 si los datos no son válidos", async () => {
-    const invalidStoreData = {
+    const invalidData = {
       name: "AB", // Nombre muy corto
       address: "Calle Principal",
       postal_number: "123", // Número postal inválido
@@ -173,14 +156,10 @@ describe("PUT /api/stores/:name_email", () => {
       phone: "12345", // Teléfono muy corto
     };
 
-    const response1 = await request(app).get("/api/stores").send();
-
-    // Realiza la solicitud PUT
+    const response1 = await request(app).post("/api/stores").send(testData);
     const response = await request(app)
-      .put(`/api/stores/${response1.body[0]._id}`)
-      .send(invalidStoreData);
-
-    // Verifica que el estado sea 400 y que el error de validación esté en el cuerpo de la respuesta
+      .put(`/api/stores/${response1.body.store._id}`)
+      .send(invalidData);
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty("error");
   });

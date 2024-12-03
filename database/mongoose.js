@@ -1,3 +1,4 @@
+//database/mongoose.js
 const mongoose = require("mongoose");
 const { config, ENV } = require("../config"); // Importar configuración
 
