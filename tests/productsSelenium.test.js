@@ -16,7 +16,7 @@ async function clickElement(driver, locator, description) {
   }
 }
 
-describe("Pruebas de la pagina de Tiendas", () => {
+describe("Pruebas de la pagina de Productos", () => {
   let driver;
 
   // Configuración inicial antes de las pruebas
@@ -36,31 +36,31 @@ describe("Pruebas de la pagina de Tiendas", () => {
     await driver.quit();
   });
 
-  it("Debería navegar hacia la página de tiendas", async () => {
-    await clickElement(driver, By.id("btn-stores"), "Botón Tiendas");
+  it("Debería navegar hacia la página de productos", async () => {
+    await clickElement(driver, By.id("btn-products"), "Botón Productos");
   });
 
   it("Debería abrir el modal para agregar una nueva tienda", async () => {
     await clickElement(
       driver,
-      By.id("btn-createStore"),
-      "Botón Agregar Tienda"
+      By.id("btn-createProduct"),
+      "Botón Agregar Producto"
     );
   });
 
   it("Debería rellenar los campos del formulario", async () => {
     // Generar datos aleatorios para el formulario
-    const storeData = {
-      name: `Tienda ${Math.floor(Math.random() * 1000)}`,
-      address: `Dirección ${Math.floor(Math.random() * 1000)}`,
-      postalCode: `${Math.floor(10000 + Math.random() * 90000)}`, // 5 dígitos
-      email: `tienda${Math.floor(Math.random() * 1000)}@gmail.com`,
-      phone: `${Math.floor(1000000000 + Math.random() * 9000000000)}`, // 10 dígitos
+    const productData = {
+      name: `Producto ${Math.floor(Math.random() * 1000)}`,
+      sku: `${Math.floor(10000 + Math.random() * 90000)}`, // 5 dígitos
+      description: `Descripción ${Math.floor(Math.random() * 1000)}`,
+      price: `${Math.floor(Math.random() * 1000) + 1}`, // 1 a 3 dígitos
+      quantity: `${Math.floor(Math.random() * 1000) + 1}`, // 1 a 3 dígitos
     };
 
     // Esperar a que el modal esté visible
     const modal = await driver.wait(
-      until.elementLocated(By.id("createStoreModal")),
+      until.elementLocated(By.id("createProductModal")),
       TIMEOUT
     );
     await driver.wait(until.elementIsVisible(modal), TIMEOUT);
@@ -69,34 +69,34 @@ describe("Pruebas de la pagina de Tiendas", () => {
     // Rellenar los campos del formulario
     await fillInputField(
       driver,
-      By.id("name"),
-      storeData.name,
+      By.id("productName"),
+      productData.name,
       "Nombre de la Tienda"
     );
+    await fillInputField(driver, By.id("productSku"), productData.sku, "SKU");
     await fillInputField(
       driver,
-      By.id("address"),
-      storeData.address,
-      "Dirección"
+      By.id("productDescription"),
+      productData.description,
+      "Descripción"
     );
     await fillInputField(
       driver,
-      By.id("postal_number"),
-      storeData.postalCode,
-      "Código Postal"
+      By.id("productPrice"),
+      productData.price,
+      "Precio"
     );
     await fillInputField(
       driver,
-      By.id("email"),
-      storeData.email,
-      "Correo Electrónico"
+      By.id("productQuantity"),
+      productData.quantity,
+      "Cantidad"
     );
-    await fillInputField(driver, By.id("phone"), storeData.phone, "Teléfono");
   });
 
   it("Debería enviar el formulario de creación de tienda", async () => {
     const submitButton = await driver.wait(
-      until.elementLocated(By.id("btn-submitCreateStore")),
+      until.elementLocated(By.id("btn-submitCreateProduct")),
       TIMEOUT
     );
     await driver.wait(until.elementIsVisible(submitButton), TIMEOUT);
