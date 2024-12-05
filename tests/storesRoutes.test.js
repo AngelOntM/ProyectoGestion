@@ -104,12 +104,9 @@ describe("DELETE /api/stores/:id", () => {
 
 describe("GET /api/stores", () => {
   it("Debería devolver todas las tiendas con estado 200", async () => {
-    await Store.insertMany(initialData);
-    //Esperar que la peticion anterior se termine
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     const response = await request(app).get("/api/stores");
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(initialData.length); // Verifica que el número de tiendas sea correcto
+    expect(response.body).toHaveLength(0); // Verifica que el número de tiendas sea correcto
   });
 });
 

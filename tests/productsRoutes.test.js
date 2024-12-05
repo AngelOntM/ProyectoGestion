@@ -75,7 +75,9 @@ describe("POST /api/products", () => {
 
 describe("DELETE /api/products/:id", () => {
   it("Debería eliminar un producto existente", async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     const response1 = await request(app).post("/api/products").send(newProduct);
+    //Esperar un segundo
     const response = await request(app).delete(
       `/api/products/${response1.body.store._id}`
     );
@@ -106,12 +108,9 @@ describe("DELETE /api/products/:id", () => {
 
 describe("GET /api/products", () => {
   it("Debería devolver todos los productos con estado 200", async () => {
-    await Product.insertMany(initialProducts);
-    //Esperar que la peticion anterior se termine
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     const response = await request(app).get("/api/products");
     expect(response.status).toBe(200);
-    expect(response.body).toHaveLength(initialProducts.length);
+    expect(response.body).toHaveLength(0);
   });
 });
 

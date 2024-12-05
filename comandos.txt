@@ -6,6 +6,12 @@ docker run -p 8080:8080 proyectogestion
 docker run -it proyectogestion-tests npm run
 docker run -it proyectogestion npm test
 
+docker build -t proyecto-gestion/base -f Dockerfile.base .
+docker build -t proyecto-gestion/app .
+
+docker build -t proyecto-gestion/final -f Dockerfile.final .
+docker run --rm proyecto-gestion/final
+
 docker ps
 docker stop
 

@@ -1,0 +1,90 @@
+
+> repositorio@1.0.0 start
+> node server.js --entorno=prod
+
+(node:22) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:22) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+Servidor corriendo en http://localhost:8080 (Entorno: prod)
+Conectado a MongoDB (prod): mongodb+srv://user1:proyectogestion@gestion.a4xhh.mongodb.net/Gestion?retryWrites=true&w=majority&appName=Gestion
+
+> repositorio@1.0.0 test
+> jest --runInBand
+
+(node:45) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+PASS tests/storesRoutes.test.js
+  POST /api/stores
+    ✓ Debería crear una nueva tienda con datos válidos (969 ms)
+    ✓ Debería retornar un error 409 si el nombre o email ya existen (224 ms)
+    ✓ Debería retornar un error 400 si los datos de la tienda son inválidos (8 ms)
+  DELETE /api/stores/:id
+    ✓ Debería eliminar una tienda existente (342 ms)
+    ✓ Debería retornar un error 404 si la tienda no existe (59 ms)
+  GET /api/stores
+    ✓ Debería devolver todas las tiendas con estado 200 (1125 ms)
+  PUT /api/stores/:id
+    ✓ Debería modificar una tienda existente (304 ms)
+    ✓ Debería retornar un error 404 si la tienda no existe (61 ms)
+    ✓ Debería retornar un error 400 si los datos no son válidos (181 ms)
+
+PASS tests/productsSelenium.test.js (8.317 s)
+  Pruebas de la pagina de Productos
+    ✓ Debería navegar hacia la página de productos (201 ms)
+    ✓ Debería abrir el modal para agregar una nueva tienda (138 ms)
+    ✓ Debería rellenar los campos del formulario (859 ms)
+    ✓ Debería enviar el formulario de creación de tienda (102 ms)
+    ✓ Debería eliminar una tienda de la lista, si no existe ninguna, no hacer nada (2509 ms)
+
+PASS tests/storesSelenium.test.js (7.727 s)
+  Pruebas de la pagina de Tiendas
+    ✓ Debería navegar hacia la página de tiendas (251 ms)
+    ✓ Debería abrir el modal para agregar una nueva tienda (145 ms)
+    ✓ Debería rellenar los campos del formulario (849 ms)
+    ✓ Debería enviar el formulario de creación de tienda (109 ms)
+    ✓ Debería eliminar una tienda de la lista, si no existe ninguna, no hacer nada (2450 ms)
+
+(node:45) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(node:45) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+PASS tests/productsRoutes.test.js
+  POST /api/products
+    ✓ Debería crear un nuevo producto con datos válidos (1038 ms)
+    ✓ Debería retornar un error 400 si los datos son inválidos (6 ms)
+    ✓ Debería retornar un error 409 si el nombre o SKU ya existen (190 ms)
+  DELETE /api/products/:id
+    ✓ Debería eliminar un producto existente (291 ms)
+    ✓ Debería retornar un error 404 si el producto no existe (59 ms)
+    ✓ Debería retornar un error 400 si el ID es inválido (6 ms)
+  GET /api/products
+    ✓ Debería devolver todos los productos con estado 200 (1121 ms)
+  PUT /api/products/:id
+    ✓ Debería actualizar un producto existente (293 ms)
+    ✓ Debería retornar un error 404 si el producto no existe (59 ms)
+    ✓ Debería retornar un error 400 si los datos son inválidos (176 ms)
+
+PASS tests/productsValidation.test.js
+  newProduct Validator
+    ✓ debería validar correctamente un producto válido (3 ms)
+    ✓ debería fallar si falta el nombre (1 ms)
+    ✓ debería fallar si el precio es negativo (1 ms)
+    ✓ debería fallar si el SKU tiene caracteres no alfanuméricos (2 ms)
+    ✓ debería fallar si la cantidad es negativa (1 ms)
+    ✓ debería aceptar un producto sin descripción (1 ms)
+    ✓ debería fallar si el nombre es demasiado corto (2 ms)
+
+PASS tests/storesValidation.test.js
+  Pruebas para la validación de la tienda
+    ✓ debería validar los datos correctos de la tienda (2 ms)
+    ✓ debería fallar si falta el nombre (2 ms)
+    ✓ debería fallar si el número postal es inválido (1 ms)
+    ✓ debería fallar si el formato del email es incorrecto (1 ms)
+    ✓ debería fallar si el teléfono no tiene 10 dígitos (1 ms)
+
+Test Suites: 6 passed, 6 total
+Tests:       41 passed, 41 total
+Snapshots:   0 total
+Time:        24.024 s
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:watch": "npm run test --entorno=test -- --watch",
-    "start": "node server.js --entorno=prod",
+    "start": "node server.js",
     "start:dev": "node server.js --entorno=dev",
     "start:test": "node server.js --entorno=test",
     "start:prod": "node server.js --entorno=prod"

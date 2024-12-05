@@ -1,0 +1,14 @@
+# Etapa 1: Construir la aplicación con la imagen base
+FROM proyecto-gestion/app AS app
+WORKDIR /app
+
+EXPOSE 8080
+
+# Jalar cambios de la aplicación
+RUN git pull
+
+# Descargar dependencias
+RUN npm install
+
+# Comando por defecto para ejecutar los pasos en secuencia
+CMD bash -c "npm start & sleep 5 && npm test"
