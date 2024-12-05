@@ -32,7 +32,7 @@ describe("Pruebas de la pagina de Tiendas", () => {
           )
         )
         .build();
-      await driver.get("http://localhost:8080/");
+      await driver.get("http://host.docker.internal:8080/");
     } catch (error) {
       throw error;
     }

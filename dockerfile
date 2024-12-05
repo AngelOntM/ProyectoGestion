@@ -9,8 +9,11 @@ WORKDIR /app
 
 # Instalar dependencias del sistema
 RUN apt-get -y update && apt-get -y install \
-    curl git wget unzip libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxdamage1 libxrandr2 \
-    libgbm-dev libasound2 libxcomposite1 libxrender1 libxi6 libxtst6 libglib2.0-0 libgconf-2-4
+    curl git wget unzip libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+    libdrm2 libxdamage1 libxrandr2 libgbm-dev libasound2 libxcomposite1 \
+    libxrender1 libxi6 libxtst6 libglib2.0-0 libgconf-2-4 libfontconfig1 \
+    --no-install-recommends && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalar Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
@@ -23,6 +26,9 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     unzip /tmp/chromedriver.zip -d /usr/local/bin && \
     chmod +x /usr/local/bin/chromedriver
 
+# Agregar ChromeDriver y Google Chrome al PATH
+ENV PATH="/usr/local/bin:/usr/bin:${PATH}"
+
 # Copiar el repositorio clonado
 COPY --from=primerLinux /ProyectoGestion /app
 
@@ -32,9 +38,12 @@ RUN npm install
 # Agregar permisos de ejecución a los binarios necesarios
 RUN chmod +x node_modules/.bin/jest
 
-# Exponer el puerto
+# Agregar variables de entorno necesarias para ejecutar pruebas en modo headless
+ENV CHROME_BIN="/usr/bin/google-chrome"
+ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
+
+# Exponer el puerto (si es necesario para pruebas locales)
 EXPOSE 8080
 
 # Comando por defecto para ejecutar las pruebas
-CMD ["npm", "run", "start:prod", "&", "npm", "run", "test"]
-
+CMD ["npm", "test"]

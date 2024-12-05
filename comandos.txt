@@ -3,7 +3,7 @@ docker system prune -a -f
 docker build -t proyectogestion .
 docker run -p 8080:8080 proyectogestion
 
-docker run -it proyectogestion npm run start:prod
+docker run -it proyectogestion-tests npm run
 docker run -it proyectogestion npm test
 
 docker ps
