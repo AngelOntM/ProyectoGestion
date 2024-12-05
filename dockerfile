@@ -46,4 +46,4 @@ ENV CHROMEDRIVER_PATH="/usr/local/bin/chromedriver"
 EXPOSE 8080
 
 # Comando por defecto para ejecutar las pruebas
-CMD ["npm", "test"]
+CMD ["npm", "start"]

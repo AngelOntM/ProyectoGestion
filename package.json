@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest --runInBand",
     "test:watch": "npm run test --entorno=test -- --watch",
-    "start": "node server.js --entorno=dev",
+    "start": "node server.js --entorno=prod",
     "start:dev": "node server.js --entorno=dev",
     "start:test": "node server.js --entorno=test",
     "start:prod": "node server.js --entorno=prod"
