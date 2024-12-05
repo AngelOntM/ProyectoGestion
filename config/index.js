@@ -4,7 +4,7 @@ require("dotenv").config(); // Cargar las variables del .env
 
 // Detectar el entorno desde los argumentos de línea de comandos
 const args = minimist(process.argv.slice(2));
-const ENV = args.entorno || "test"; // Por defecto, 'dev'
+const ENV = args.entorno || "prod"; // Por defecto, 'dev'
 
 const config = {
   dev: {

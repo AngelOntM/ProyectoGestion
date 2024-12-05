@@ -110,7 +110,6 @@ describe("Pruebas de la pagina de Tiendas", () => {
     await driver.wait(until.elementIsVisible(submitButton), TIMEOUT);
     await driver.wait(until.elementIsEnabled(submitButton), TIMEOUT);
     await submitButton.click();
-    console.log("✅ Formulario enviado.");
   });
 
   it("Debería eliminar una tienda de la lista, si no existe ninguna, no hacer nada", async () => {
@@ -137,17 +136,13 @@ describe("Pruebas de la pagina de Tiendas", () => {
       );
 
       await deleteButton.click();
-      console.log("✅ Se hizo clic en el botón de eliminar.");
-
       // Confirmar la eliminación
       const confirmButton = await driver.wait(
         until.elementLocated(By.className("swal2-confirm")),
         TIMEOUT
       );
       await confirmButton.click();
-      console.log("✅ Confirmación enviada.");
     } catch (error) {
-      console.error("❌ Error al intentar eliminar una tienda.", error);
       throw error;
     }
   });
