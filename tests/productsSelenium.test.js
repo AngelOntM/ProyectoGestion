@@ -26,7 +26,6 @@ describe("Pruebas de la pagina de Productos", () => {
         .setChromeOptions(
           new chrome.Options().addArguments(
             "--headless=new",
-            "--headless",
             "--no-sandbox",
             "--window-size=1920x1080"
           )
