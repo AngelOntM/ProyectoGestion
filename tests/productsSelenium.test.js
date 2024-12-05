@@ -20,18 +20,22 @@ describe("Pruebas de la pagina de Productos", () => {
 
   // Configuración inicial antes de las pruebas
   beforeAll(async () => {
-    driver = await new Builder()
-      .forBrowser(Browser.CHROME)
-      .setChromeOptions(
-        new chrome.Options().addArguments(
-          "--headless=new",
-          "--headless",
-          "--no-sandbox",
-          "--window-size=1920x1080"
+    try {
+      driver = await new Builder()
+        .forBrowser(Browser.CHROME)
+        .setChromeOptions(
+          new chrome.Options().addArguments(
+            "--headless=new",
+            "--headless",
+            "--no-sandbox",
+            "--window-size=1920x1080"
+          )
         )
-      )
-      .build();
-    await driver.get("http://localhost:8080/");
+        .build();
+      await driver.get("http://localhost:8080/");
+    } catch (error) {
+      throw error;
+    }
   });
 
   // Finalización después de las pruebas
